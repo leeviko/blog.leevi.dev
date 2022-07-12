@@ -34,6 +34,7 @@ app.use(
 );
 
 app.use("/api/users", require("./routes/api/users"));
+app.use("/api/posts", require("./routes/api/posts"));
 
 app.listen(port, () => {
   console.log(`⚡️ Server is running on port ${port}`);
