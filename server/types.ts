@@ -2,6 +2,10 @@ import session from "express-session";
 
 declare module "express-session" {
   export interface SessionData {
-    user?: object;
+    user?: {
+      id: string;
+      username: string;
+      created_at: Date;
+    };
   }
 }

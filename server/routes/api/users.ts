@@ -36,7 +36,7 @@ router.post(
     }
 
     // Check if user already exists
-    const sql = "SELECT name FROM users WHERE name = $1 LIMIT 1";
+    const sql = "SELECT username FROM users WHERE username = $1 LIMIT 1";
 
     const userExists = await pool.query(sql, [username]);
     if (userExists.rowCount === 1) {
@@ -57,7 +57,7 @@ router.post(
 
       const query = {
         name: "create-user",
-        text: "INSERT INTO users (id, name, password) VALUES ($1, $2, $3)",
+        text: "INSERT INTO users (id, username, password) VALUES ($1, $2, $3)",
         values: [id, username, hash],
       };
 
@@ -81,7 +81,7 @@ router.post(
         const user = {
           id,
           username,
-          createdat: new Date(),
+          created_at: new Date(),
         };
 
         req.session.user = user;
@@ -118,7 +118,7 @@ router.post(
 
     const query = {
       name: "get-user-by-username",
-      text: "SELECT * FROM users WHERE name = $1",
+      text: "SELECT * FROM users WHERE username = $1",
       values: [username],
     };
 
@@ -144,8 +144,8 @@ router.post(
 
         const userObj = {
           id: user.id,
-          username: user.name,
-          createdat: user.createdat,
+          username: user.username,
+          created_at: user.created_at,
         };
 
         req.session.user = userObj;
