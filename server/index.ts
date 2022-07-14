@@ -3,12 +3,14 @@ import session from "express-session";
 import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
