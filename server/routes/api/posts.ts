@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body, param, query, validationResult } from "express-validator";
 import pool from "../../config/db";
 import { auth } from "../../middleware/auth";
 import { convertToSlug } from "../../utils";
@@ -15,51 +15,48 @@ interface pgError extends Error {
  * @desc   Get public posts
  * @access Public
  */
-router.get("/", async (req, res) => {
-  let { limit, cursor } = req.query;
+router.get(
+  "/",
+  [
+    query("limit").escape().trim().isNumeric().isLength({ max: 10 }),
+    query("cursor").escape().trim(),
+  ],
+  async (req: Request, res: Response) => {
+    let { limit, cursor } = req.query;
 
-  if (!cursor) {
-    const sql = "SELECT * FROM posts ORDER BY created_at LIMIT $1";
+    const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
+      "binary"
+    );
 
-    pool.query(sql, [limit], (err, result) => {
+    let sql = `
+      SELECT * 
+      FROM posts 
+      WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1
+    `;
+    let params = [limit, decodedCursor];
+
+    if (!cursor || !decodedCursor) {
+      sql = "SELECT * FROM posts ORDER BY created_at LIMIT $1";
+      params = [limit];
+    }
+
+    pool.query(sql, params, (err, result) => {
       if (err) {
         return res.status(400).json({
           msg: "Something went wrong while loading posts",
           err: err.message,
         });
       }
+      const cursor: any = result.rows[result.rows.length - 1].created_at;
 
-      return res.json(result.rows);
+      const encodedCursor: any = Buffer.from(JSON.stringify(cursor)).toString(
+        "base64"
+      );
+
+      return res.json({ result: result.rows, cursor: encodedCursor });
     });
   }
-
-  const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
-    "binary"
-  );
-
-  const sql = `
-    SELECT * 
-    FROM posts 
-    WHERE date_trunc('second', created_at) > $1 ORDER BY created_at LIMIT $2
-  `;
-
-  pool.query(sql, [decodedCursor, limit], (err, result) => {
-    if (err) {
-      return res.status(400).json({
-        msg: "Something went wrong while loading posts",
-        err: err.message,
-      });
-    }
-
-    const cursor: any = result.rows[result.rows.length - 1].created_at;
-
-    const encodedCursor: any = Buffer.from(JSON.stringify(cursor)).toString(
-      "base64"
-    );
-
-    return res.json({ result: result.rows, cursor: encodedCursor });
-  });
-});
+);
 
 /**
  * @route  POST api/posts
@@ -102,6 +99,7 @@ router.post(
       isPrivate,
     };
 
+    // Check if user exists
     const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
     const author = await pool.query(sql, [newPost.authorId]);
 
@@ -126,6 +124,49 @@ router.post(
       }
 
       res.json({ ...newPost, created_at: new Date() });
+    });
+  }
+);
+
+/**
+ * @route  DELETE api/posts/:slug
+ * @desc   Delete a post
+ * @access Private
+ */
+router.delete(
+  "/:slug",
+  [param("slug").escape().trim()],
+  auth,
+  async (req: Request, res: Response) => {
+    const { slug } = req.params;
+    const userId = req.session.user?.id;
+
+    // Check if user exists
+    const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
+    const author = await pool.query(sql, [userId]);
+
+    if (author.rowCount === 0) {
+      return res.status(400).json({ msg: "User doesnt exist" });
+    }
+
+    const query = {
+      name: "delete-post",
+      text: "DELETE FROM posts WHERE slug = $1 AND authorId = $2",
+      values: [slug, userId],
+    };
+
+    pool.query(query, (err, result) => {
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: "Couldnt delete post", err: err.message });
+      }
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ msg: "Post not found" });
+      }
+
+      return res.json({ msg: "Post deleted", slug });
     });
   }
 );
