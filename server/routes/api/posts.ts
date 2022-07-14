@@ -24,39 +24,29 @@ router.get(
   async (req: Request, res: Response) => {
     let { limit, cursor } = req.query;
 
-    if (!cursor) {
-      const sql = "SELECT * FROM posts ORDER BY created_at LIMIT $1";
-
-      pool.query(sql, [limit], (err, result) => {
-        if (err) {
-          return res.status(400).json({
-            msg: "Something went wrong while loading posts",
-            err: err.message,
-          });
-        }
-
-        return res.json(result.rows);
-      });
-    }
-
     const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
       "binary"
     );
 
-    const sql = `
-    SELECT * 
-    FROM posts 
-    WHERE date_trunc('second', created_at) > $1 ORDER BY created_at LIMIT $2
-  `;
+    let sql = `
+      SELECT * 
+      FROM posts 
+      WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1
+    `;
+    let params = [limit, decodedCursor];
 
-    pool.query(sql, [decodedCursor, limit], (err, result) => {
+    if (!cursor || !decodedCursor) {
+      sql = "SELECT * FROM posts ORDER BY created_at LIMIT $1";
+      params = [limit];
+    }
+
+    pool.query(sql, params, (err, result) => {
       if (err) {
         return res.status(400).json({
           msg: "Something went wrong while loading posts",
           err: err.message,
         });
       }
-
       const cursor: any = result.rows[result.rows.length - 1].created_at;
 
       const encodedCursor: any = Buffer.from(JSON.stringify(cursor)).toString(
