@@ -1,41 +1,40 @@
 import {
   createAsyncThunk,
   createEntityAdapter,
-  createSelector,
   createSlice,
 } from "@reduxjs/toolkit";
 import api from "../../api";
 
-const postsAdapter = createEntityAdapter();
+const postsAdapter = createEntityAdapter({
+  selectId: (post: any) => post.slug,
+});
 
 export interface PostState {
-  post: {
-    posts: Array<object>;
-    pagination: {
-      limit: number;
-      cursor: string | null;
-    };
-    loading: boolean | null;
-    error: string | undefined | null;
+  pagination: {
+    limit: number;
+    cursor: string | null;
   };
+  loading: boolean | null;
+  error: string | undefined | null;
 }
 
-const initialState: PostState = {
-  post: {
-    posts: [],
-    pagination: {
-      limit: 10,
-      cursor: null,
-    },
-    loading: null,
-    error: null,
+const initialState: PostState = postsAdapter.getInitialState({
+  pagination: {
+    limit: 10,
+    cursor: null,
   },
-};
+  loading: null,
+  error: null,
+});
 
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
-  async (limit, cursor) => {
-    const response = await api.get("/posts", { params: { limit, cursor } });
+  async (pagination: any) => {
+    const { limit, cursor } = pagination;
+    const response = await api.get("/posts", {
+      params: { limit, cursor },
+    });
+
     return response.data;
   }
 );
@@ -64,11 +63,12 @@ const postsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(fetchPosts.pending, (state, action) => {
-        state.post.loading = true;
+        state.loading = true;
       })
-      .addCase(fetchPosts.fulfilled, (state: PostState | any, action) => {
-        state.post.loading = false;
-        const loadedPosts = action.payload.map((data: any) => {
+      .addCase(fetchPosts.fulfilled, (state: any, action) => {
+        state.loading = false;
+        state.pagination.cursor = action.payload.cursor;
+        const loadedPosts = action.payload.result.map((data: any) => {
           return data;
         });
 
@@ -76,8 +76,8 @@ const postsSlice = createSlice({
         postsAdapter.upsertMany(state, loadedPosts);
       })
       .addCase(fetchPosts.rejected, (state, action) => {
-        state.post.loading = false;
-        state.post.error = action.error.message;
+        state.loading = false;
+        state.error = action.error.message;
       })
       .addCase(addPost.fulfilled, (state: any, action) => {
         action.payload.userId = Number(action.payload.userId);

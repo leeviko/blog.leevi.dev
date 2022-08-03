@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import errorSlice from "./slices/errorSlice";
-import postSlice from "./slices/postSlice";
+// import errorsReducer from "./features/errors/errorSlice";
+import postsReducer from "./features/posts/postSlice";
 
 export const store = configureStore({
   reducer: {
-    post: postSlice,
-    error: errorSlice,
+    posts: postsReducer,
+    // errors: errorsReducer,
   },
 });
 

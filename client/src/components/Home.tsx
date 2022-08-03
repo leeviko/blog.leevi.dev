@@ -1,17 +1,14 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { getPosts } from "../slices/postSlice";
+import React from "react";
+import PostList from "../features/posts/PostList";
 
 type Props = {};
 
 const Home = (props: Props) => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getPosts());
-  }, []);
-
-  return <div className="home-page page"></div>;
+  return (
+    <div className="home-page page">
+      <PostList />
+    </div>
+  );
 };
 
 export default Home;
