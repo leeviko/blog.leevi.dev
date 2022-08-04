@@ -1,4 +1,6 @@
 import React from "react";
+import useGetAuthor from "../../hooks/useGetAuthor";
+import { AuthorType } from "../../types";
 
 type Props = {
   post: {
@@ -14,6 +16,7 @@ type Props = {
 
 const PostSmall = (props: Props) => {
   const { post } = props;
+  const author: AuthorType | any = useGetAuthor(post.authorid);
 
   const formatDate = new Date(post.created_at);
 
@@ -21,7 +24,7 @@ const PostSmall = (props: Props) => {
     <div className="post-small">
       <div className="post-small-wrapper">
         <div className="post-small-author">
-          <span className="author-name">{post.authorid}</span>
+          <span className="author-name">{author && author.username}</span>
           <span className="post-small-date">
             {formatDate.toLocaleDateString()}
           </span>
