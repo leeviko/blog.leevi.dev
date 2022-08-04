@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import { scrypt, randomBytes } from "crypto";
 import { nanoid } from "nanoid";
-import { body, validationResult } from "express-validator";
+import { body, param, validationResult } from "express-validator";
 import pool from "../../config/db";
 
 const router: Router = express.Router();
@@ -152,6 +152,44 @@ router.post(
 
         return res.json({ ...userObj, description: user.description });
       });
+    });
+  }
+);
+
+/**
+ * @route  GET api/users/:id
+ * @desc   Get user
+ * @access Public
+ */
+router.get(
+  "/:id",
+  [param("id").escape().trim()],
+  (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    if (!id) {
+      return res.status(400).json({ msg: "Something went wrong" });
+    }
+
+    const query = {
+      name: "get-user-by-id",
+      text: `
+        SELECT id, username, description, created_at 
+        FROM users WHERE id = $1 LIMIT 1
+      `,
+      values: [id],
+    };
+
+    pool.query(query, (err, result) => {
+      if (err) {
+        return res.status(400).json({ msg: "Something went wrong" });
+      }
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
+      return res.json({ result: result.rows[0] });
     });
   }
 );

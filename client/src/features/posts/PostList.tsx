@@ -13,6 +13,7 @@ const PostList = (props: Props) => {
 
   useEffect(() => {
     dispatch(fetchPosts({ limit: 10, cursor: "" }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
