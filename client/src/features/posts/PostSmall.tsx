@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import useGetAuthor from "../../hooks/useGetAuthor";
 import { AuthorType } from "../../types";
 
@@ -25,11 +26,11 @@ const PostSmall = (props: Props) => {
       <div className="post-small-wrapper">
         <div className="post-small-author">
           <span className="author-name">{author && author.username}</span>
-          <span className="post-small-date">
-            {formatDate.toLocaleDateString()}
-          </span>
+          <span className="date">{formatDate.toLocaleDateString()}</span>
         </div>
-        <h1>{post.title}</h1>
+        <h1 className="post-small-title">
+          <Link to={`/posts/${post.slug}`}>{post.title}</Link>
+        </h1>
       </div>
     </div>
   );

@@ -6,7 +6,10 @@ type Props = {};
 const Home = (props: Props) => {
   return (
     <div className="home-page page">
-      <PostList />
+      <div className="page-wrapper">
+        <h1 className="section-title">recent posts</h1>
+        <PostList />
+      </div>
     </div>
   );
 };

@@ -17,11 +17,8 @@ const PostList = (props: Props) => {
   }, []);
 
   return (
-    <div className="posts-page page">
-      <div className="post-list">
-        {posts &&
-          posts.map((post) => <PostSmall key={post.slug} post={post} />)}
-      </div>
+    <div className="post-list">
+      {posts && posts.map((post) => <PostSmall key={post.slug} post={post} />)}
     </div>
   );
 };
