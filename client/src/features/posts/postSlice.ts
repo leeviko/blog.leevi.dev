@@ -31,11 +31,14 @@ export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (pagination: any) => {
     const { limit, cursor } = pagination;
-    const response = await api.get("/posts", {
-      params: { limit, cursor },
-    });
 
-    return response.data;
+    try {
+      const res = await api.get("/posts", { params: { limit, cursor } });
+
+      return res.data;
+    } catch (err) {
+      console.log("err: ", err);
+    }
   }
 );
 
@@ -46,8 +49,13 @@ export const addPost = createAsyncThunk("posts/addPost", async (post) => {
     },
   };
 
-  const response = await api.post("/posts", post, headers);
-  return response.data;
+  try {
+    const res = await api.post("/posts", post, headers);
+
+    return res.data;
+  } catch (err) {
+    console.log("err: ", err);
+  }
 });
 
 export const deletePost = createAsyncThunk("posts/deletePost", async (id) => {
