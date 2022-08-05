@@ -14,7 +14,6 @@ const useGetAuthor = (authorid: string) => {
     api
       .get(`/users/${authorid}`, headers)
       .then((res) => {
-        console.log(res.data);
         setAuthor(res.data.result);
       })
       .catch((err) => {
