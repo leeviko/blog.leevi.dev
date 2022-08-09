@@ -1,10 +1,13 @@
 :root {
   --black: #282828;
+  --white: #fbf1c7;
   --gray: #928374;
   --aqua: #427b58;
   --red: #9d0006;
   --green: #79740e;
   --blue: #076678;
+
+  --bg-main: #f9f5d7;
 
   --link-blue: #074378;
 }
@@ -45,6 +48,7 @@
 
 body {
   font-family: "Cairo";
+  background-color: var(--bg-main);
 }
 
 p {
@@ -118,3 +122,24 @@ h5 {
   color: var(--black);
 }
 /* END OF SMALL POST */
+
+/* PAGINATION */
+.pagination {
+  margin: 2rem 0 0 0;
+}
+.pagination button {
+  cursor: pointer;
+  border: 1px solid var(--blue);
+  font-size: 1rem;
+  color: var(--blue);
+  border-radius: 0.2rem;
+  background: none;
+  padding: 0.25rem;
+  margin-right: 1rem;
+}
+
+.pagination .disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+/* END OF PAGINATION */

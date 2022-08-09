@@ -22,18 +22,32 @@ router.get(
     query("cursor").escape().trim(),
   ],
   async (req: Request, res: Response) => {
-    let { limit, cursor } = req.query;
+    let { limit, cursor, page } = req.query;
 
     const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
       "binary"
     );
+    let sql;
+    let params;
 
-    let sql = `
-      SELECT * 
-      FROM posts 
-      WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1
-    `;
-    let params = [limit, decodedCursor];
+    params = [limit, decodedCursor];
+    switch (page) {
+      case "prev":
+        sql = `
+          SELECT * 
+          FROM posts 
+          WHERE date_trunc('second', created_at) < $2 ORDER BY created_at LIMIT $1
+        `;
+        break;
+      case "next":
+      default:
+        sql = `
+          SELECT * 
+          FROM posts 
+          WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1
+        `;
+        break;
+    }
 
     if (!cursor || !decodedCursor) {
       sql = "SELECT * FROM posts ORDER BY created_at LIMIT $1";
@@ -47,13 +61,16 @@ router.get(
           err: err.message,
         });
       }
-      const cursor: any = result.rows[result.rows.length - 1].created_at;
+      const nextCursor: any = result.rows[result.rows.length - 1].created_at;
 
-      const encodedCursor: any = Buffer.from(JSON.stringify(cursor)).toString(
-        "base64"
-      );
+      const encodedNextCursor: any = Buffer.from(
+        JSON.stringify(nextCursor)
+      ).toString("base64");
 
-      return res.json({ result: result.rows, cursor: encodedCursor });
+      return res.json({
+        result: result.rows,
+        cursor: { prev: cursor || null, next: encodedNextCursor },
+      });
     });
   }
 );

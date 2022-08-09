@@ -30,10 +30,10 @@ const initialState: PostState = postsAdapter.getInitialState({
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (pagination: any) => {
-    const { limit, cursor } = pagination;
+    const { limit, cursor, page } = pagination;
 
     try {
-      const res = await api.get("/posts", { params: { limit, cursor } });
+      const res = await api.get("/posts", { params: { limit, cursor, page } });
 
       return res.data;
     } catch (err) {
@@ -80,8 +80,7 @@ const postsSlice = createSlice({
           return data;
         });
 
-        // Add any fetched posts to the array
-        postsAdapter.upsertMany(state, loadedPosts);
+        postsAdapter.setAll(state, loadedPosts);
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
@@ -131,6 +130,7 @@ export const {
 
 export const getPostsLoading = (state: any) => state.posts.loading;
 export const getPostsError = (state: any) => state.posts.error;
+export const getPostsPagination = (state: any) => state.posts.pagination;
 export const getCount = (state: any) => state.posts.count;
 
 export default postsSlice.reducer;
