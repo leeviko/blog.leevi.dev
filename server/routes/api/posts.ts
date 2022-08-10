@@ -28,8 +28,8 @@ router.get(
       "binary"
     );
     let sql;
-    let params;
-
+    let params: any;
+    console.log(limit);
     params = [limit, decodedCursor];
     switch (page) {
       case "prev":
@@ -61,11 +61,34 @@ router.get(
           err: err.message,
         });
       }
+      const { rowCount } = result;
+
       const nextCursor: any = result.rows[result.rows.length - 1].created_at;
 
-      const encodedNextCursor: any = Buffer.from(
+      let encodedNextCursor: any = Buffer.from(
         JSON.stringify(nextCursor)
       ).toString("base64");
+
+      if (rowCount < 10) {
+        encodedNextCursor = null;
+      } else {
+        sql = `
+          SELECT * 
+          FROM posts 
+          WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1 + 1
+        `;
+
+        pool.query(sql, params, (err, result) => {
+          if (err) {
+            encodedNextCursor = null;
+            return;
+          }
+          if (result.rowCount === 0) {
+            encodedNextCursor = null;
+            return;
+          }
+        });
+      }
 
       return res.json({
         result: result.rows,
