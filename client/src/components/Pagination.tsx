@@ -37,7 +37,6 @@ const Pagination = (props: Props) => {
 
   return (
     <div className="pagination">
-      <>{console.log(pageNum)}</>
       <div className="pagination-wrapper">
         <button
           onClick={handlePrev}

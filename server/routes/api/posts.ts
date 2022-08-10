@@ -29,7 +29,7 @@ router.get(
     );
     let sql;
     let params: any;
-    console.log(limit);
+
     params = [limit, decodedCursor];
     switch (page) {
       case "prev":

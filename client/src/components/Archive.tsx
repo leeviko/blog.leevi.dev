@@ -19,7 +19,6 @@ const Archive = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    console.log("archive");
     dispatch(fetchPosts({ limit, cursor }));
   }, []);
 

@@ -14,7 +14,6 @@ const Home = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    console.log("home");
     dispatch(fetchPosts({ limit, cursor }));
   }, []);
 
