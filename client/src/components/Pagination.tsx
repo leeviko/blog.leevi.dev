@@ -4,6 +4,8 @@ import { fetchPosts } from "../features/posts/postSlice";
 import { AppDispatch } from "../store";
 
 type Props = {
+  pageNum: number;
+  setPageNum: React.Dispatch<React.SetStateAction<number>>;
   cursor: {
     prev: string | null;
     next: string | null;
@@ -11,26 +13,37 @@ type Props = {
 };
 
 const Pagination = (props: Props) => {
-  const { cursor } = props;
+  const { pageNum, setPageNum, cursor } = props;
   const dispatch = useDispatch<AppDispatch>();
 
   const handlePrev = () => {
     if (cursor.prev) {
-      dispatch(fetchPosts({ limit: 10, cursor: cursor.prev, page: "prev" }));
+      if (pageNum > 1) {
+        setPageNum(pageNum - 1);
+        if (pageNum >= 1) {
+          dispatch(
+            fetchPosts({ limit: 10, cursor: cursor.prev, page: "prev" })
+          );
+        }
+      }
     }
   };
   const handleNext = () => {
     if (cursor.next) {
+      setPageNum(pageNum + 1);
       dispatch(fetchPosts({ limit: 10, cursor: cursor.next, page: "next" }));
     }
   };
 
   return (
     <div className="pagination">
+      <>{console.log(pageNum)}</>
       <div className="pagination-wrapper">
         <button
           onClick={handlePrev}
-          className={`prev-btn ${cursor.prev ? "enabled" : "disabled"}`}
+          className={`prev-btn ${
+            cursor.prev && pageNum > 1 ? "enabled" : "disabled"
+          }`}
         >
           Prev
         </button>
