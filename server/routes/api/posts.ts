@@ -34,7 +34,7 @@ router.get(
     switch (page) {
       case "prev":
         sql = `
-          SELECT * 
+          SELECT slug, authorid, title, tags, private, created_at 
           FROM posts 
           WHERE created_at > $2 ORDER BY created_at DESC LIMIT $1
         `;
@@ -42,7 +42,7 @@ router.get(
       case "next":
       default:
         sql = `
-          SELECT * 
+          SELECT slug, authorid, title, tags, private, created_at 
           FROM posts 
           WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1
         `;
@@ -50,7 +50,8 @@ router.get(
     }
 
     if (!cursor || !decodedCursor) {
-      sql = "SELECT * FROM posts ORDER BY created_at DESC LIMIT $1";
+      sql =
+        "SELECT slug, authorid, title, tags, private, created_at FROM posts ORDER BY created_at DESC LIMIT $1";
       params = [limit];
     }
 
@@ -73,7 +74,7 @@ router.get(
         encodedNextCursor = null;
       } else {
         sql = `
-          SELECT * 
+          SELECT slug, authorid, title, tags, private, created_at 
           FROM posts 
           WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
         `;
