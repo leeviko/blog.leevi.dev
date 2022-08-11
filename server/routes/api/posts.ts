@@ -29,14 +29,14 @@ router.get(
     );
     let sql;
     let params: any;
-
     params = [limit, decodedCursor];
+
     switch (page) {
       case "prev":
         sql = `
           SELECT * 
           FROM posts 
-          WHERE date_trunc('second', created_at) < $2 ORDER BY created_at LIMIT $1
+          WHERE created_at > $2 ORDER BY created_at DESC LIMIT $1
         `;
         break;
       case "next":
@@ -44,13 +44,13 @@ router.get(
         sql = `
           SELECT * 
           FROM posts 
-          WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1
+          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1
         `;
         break;
     }
 
     if (!cursor || !decodedCursor) {
-      sql = "SELECT * FROM posts ORDER BY created_at LIMIT $1";
+      sql = "SELECT * FROM posts ORDER BY created_at DESC LIMIT $1";
       params = [limit];
     }
 
@@ -75,7 +75,7 @@ router.get(
         sql = `
           SELECT * 
           FROM posts 
-          WHERE date_trunc('second', created_at) > $2 ORDER BY created_at LIMIT $1 + 1
+          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
         `;
 
         pool.query(sql, params, (err, result) => {
