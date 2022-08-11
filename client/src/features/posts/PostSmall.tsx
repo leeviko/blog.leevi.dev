@@ -2,6 +2,7 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 import { Link } from "react-router-dom";
 import LoaderWrapper from "../../components/LoaderWrapper";
+import Tag from "../../components/Tag";
 import useGetAuthor from "../../hooks/useGetAuthor";
 import { AuthorType } from "../../types";
 
@@ -43,6 +44,11 @@ const PostSmall = (props: Props) => {
         <h1 className="post-small-title">
           <Link to={`/posts/${post.slug}`}>{post.title}</Link>
         </h1>
+        <ul className="post-tags">
+          {post.tags.map((tag) => (
+            <Tag key={tag} name={tag} />
+          ))}
+        </ul>
       </div>
     </div>
   );
