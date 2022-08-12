@@ -1,9 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-type Props = {};
-
-const Navbar = (props: Props) => {
+const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-wrapper">

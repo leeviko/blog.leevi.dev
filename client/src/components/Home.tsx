@@ -11,8 +11,7 @@ type Props = {
   cursor: string;
 };
 
-const Home = (props: Props) => {
-  const { limit, cursor } = props;
+const Home = ({ limit, cursor }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const loading = useSelector((state: any) => state.posts.loading);
 

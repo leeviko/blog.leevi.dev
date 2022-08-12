@@ -18,8 +18,7 @@ type Props = {
   };
 };
 
-const PostSmall = (props: Props) => {
-  const { post } = props;
+const PostSmall = ({ post }: Props) => {
   const author: AuthorType | any = useGetAuthor(post.authorid);
 
   const formatDate = new Date(post.created_at);

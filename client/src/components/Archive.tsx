@@ -14,12 +14,11 @@ type Props = {
   cursor: string;
 };
 
-const Archive = (props: Props) => {
+const Archive = ({ limit, cursor }: Props) => {
   const [pageNum, setPageNum] = useState(1);
   const pagination = useSelector((state: any) => state.posts.pagination);
   const loading = useSelector((state: any) => state.posts.loading);
 
-  const { limit, cursor } = props;
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {

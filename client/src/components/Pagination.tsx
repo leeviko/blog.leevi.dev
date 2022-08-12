@@ -12,12 +12,12 @@ type Props = {
   };
 };
 
-const Pagination = (props: Props) => {
-  const { pageNum, setPageNum, cursor } = props;
+const Pagination = ({ pageNum, setPageNum, cursor }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handlePrev = () => {
     if (cursor.prev) {
+      // TODO: Make this better
       if (pageNum > 1) {
         setPageNum(pageNum - 1);
         if (pageNum >= 1) {

@@ -4,9 +4,7 @@ import { selectAllPosts } from "../../features/posts/postSlice";
 
 import PostSmall from "./PostSmall";
 
-type Props = {};
-
-const PostList = (props: Props) => {
+const PostList = () => {
   const posts = useSelector(selectAllPosts);
 
   return (
