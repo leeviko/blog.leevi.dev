@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 const LoaderWrapper = ({
   loading,
   loaderComponent,
-  delay,
+  delay = 750,
   children,
 }: {
   loading: boolean;
