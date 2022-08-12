@@ -83,6 +83,7 @@ h5 {
 .page {
   display: flex;
   justify-content: center;
+  margin: 0 0 1rem 0;
 }
 
 .page-wrapper {
@@ -96,6 +97,7 @@ h5 {
 
 /* NAVBAR */
 .navbar {
+  margin: 0.5rem 0 0 0;
   display: flex;
   justify-content: center;
 }
@@ -163,8 +165,9 @@ h5 {
 
 /* PAGINATION */
 .pagination {
-  margin: 2rem 0 0 0;
+  margin: 1rem 0 2rem 0;
 }
+
 .pagination button {
   cursor: pointer;
   border: 1px solid var(--blue);
