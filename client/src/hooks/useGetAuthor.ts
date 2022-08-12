@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 
-const useGetAuthor = (authorid: string) => {
+const useGetAuthor = (authorId: string) => {
   const [author, setAuthor] = useState(null);
 
   const getAuthor = () => {
@@ -12,7 +12,7 @@ const useGetAuthor = (authorid: string) => {
     };
 
     api
-      .get(`/users/${authorid}`, headers)
+      .get(`/users/${authorId}`, headers)
       .then((res) => {
         setAuthor(res.data.result);
       })
