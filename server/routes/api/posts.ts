@@ -100,6 +100,51 @@ router.get(
 );
 
 /**
+ * @route  GET api/posts/:slug
+ * @desc   Get post by slug
+ * @access Public
+ */
+
+router.get(
+  "/:slug",
+  [param("slug").escape().trim()],
+  (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const { slug } = req.params;
+
+    if (!slug) {
+      return res.status(400).json({ msg: "Id not specified" });
+    }
+
+    const query = {
+      name: "get-post-by-slug",
+      text: "SELECT * FROM posts WHERE slug = $1 LIMIT 1",
+      values: [slug],
+    };
+
+    pool.query(query, (err, result) => {
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: "Something went wrong", err: err.message });
+      }
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ msg: "Post not found" });
+      }
+
+      return res.json({
+        result: result.rows,
+      });
+    });
+  }
+);
+
+/**
  * @route  POST api/posts
  * @desc   Create new post
  * @access Private
