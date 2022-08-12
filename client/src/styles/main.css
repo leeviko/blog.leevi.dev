@@ -102,8 +102,13 @@ h5 {
   justify-content: center;
 }
 
+.navbar-logo {
+  margin: 1rem 0 0 0;
+}
+
 .nav-items {
   display: flex;
+  justify-content: center;
 }
 
 .nav-item {
