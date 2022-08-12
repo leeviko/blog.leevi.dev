@@ -6,6 +6,7 @@ import "./styles/main.css";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import Archive from "./components/Archive";
+import Post from "./features/posts/Post";
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home limit={10} cursor="" />} />
         <Route path="/archive" element={<Archive limit={10} cursor="" />} />
+        <Route path="/posts">
+          <Route path=":postId" element={<Post />} />
+        </Route>
       </Routes>
     </Router>
   );
