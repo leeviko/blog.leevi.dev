@@ -1,6 +1,6 @@
 import React from "react";
 import Skeleton from "react-loading-skeleton";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import LoaderWrapper from "../../components/LoaderWrapper";
 import Tag from "../../components/Tag";
 import useGetAuthor from "../../hooks/useGetAuthor";
