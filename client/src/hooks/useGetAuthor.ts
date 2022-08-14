@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 
-const useGetAuthor = (authorId: string) => {
+const useGetAuthor = (authorId: string | null) => {
   const [author, setAuthor] = useState(null);
 
   const getAuthor = () => {
@@ -22,9 +22,11 @@ const useGetAuthor = (authorId: string) => {
   };
 
   useEffect(() => {
-    getAuthor();
+    if (authorId) {
+      getAuthor();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authorId]);
 
   return author;
 };

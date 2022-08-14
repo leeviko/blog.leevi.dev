@@ -4,3 +4,13 @@ export type AuthorType = {
   id: string;
   username: string;
 };
+
+export type PostType = {
+  authorid: string;
+  content: string;
+  created_at: string;
+  private: boolean | null;
+  slug: string;
+  tags: Array<string>;
+  title: string;
+};

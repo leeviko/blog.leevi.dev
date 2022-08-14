@@ -118,7 +118,6 @@ h5 {
 .nav-item.active {
   text-decoration: underline;
 }
-
 /* END OF NAVBAR */
 
 /* POST LIST */
@@ -128,18 +127,17 @@ h5 {
 /* END OF POST LIST */
 
 /* SMALL POST */
-
-.post-small-author {
+.p-author {
   font-size: 0.9rem;
 }
 
-.post-small .author-name {
+.p-author .author-name {
   color: var(--black);
   margin-right: 0.25rem;
   font-weight: bold;
 }
 
-.post-small .date {
+.p-author .date {
   opacity: 0.75;
 }
 
@@ -149,8 +147,7 @@ h5 {
   margin: 0.5rem 0;
 }
 
-.post-small .post-tags {
-  /* margin-top: 0.25rem; */
+.post-tags {
   display: flex;
 }
 
@@ -162,16 +159,32 @@ h5 {
   padding: 0.1rem 0.25rem;
 }
 
-.post-small-title {
+.p-title {
   line-height: 1.25;
   font-size: 1.2rem;
 }
 
-.post-small-title a {
-  text-decoration: none;
+.p-title,
+.p-title a {
   color: var(--black);
+  text-decoration: none;
 }
 /* END OF SMALL POST */
+
+/* POST */
+.post-container {
+  display: flex;
+  justify-content: center;
+}
+
+.post {
+  width: 600px;
+}
+
+.post .p-title {
+  font-size: 1.5rem;
+}
+/* END OF POST */
 
 /* PAGINATION */
 .pagination {

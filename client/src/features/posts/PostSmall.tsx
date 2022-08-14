@@ -4,18 +4,10 @@ import { Link } from "react-router-dom";
 import LoaderWrapper from "../../components/LoaderWrapper";
 import Tag from "../../components/Tag";
 import useGetAuthor from "../../hooks/useGetAuthor";
-import { AuthorType } from "../../types";
+import { AuthorType, PostType } from "../../types";
 
 type Props = {
-  post: {
-    authorid: string;
-    content: string;
-    created_at: string;
-    private: boolean;
-    slug: string;
-    tags: Array<string>;
-    title: string;
-  };
+  post: PostType;
 };
 
 const PostSmall = ({ post }: Props) => {
@@ -26,7 +18,7 @@ const PostSmall = ({ post }: Props) => {
   return (
     <div className="post-small">
       <div className="post-small-wrapper">
-        <div className="post-small-author">
+        <div className="post-small-author p-author">
           <LoaderWrapper
             loading={author === null}
             loaderComponent={<Skeleton width={100} />}
@@ -40,10 +32,10 @@ const PostSmall = ({ post }: Props) => {
             )}
           </LoaderWrapper>
         </div>
-        <h1 className="post-small-title">
+        <h1 className="post-small-title p-title">
           <Link to={`/posts/${post.slug}`}>{post.title}</Link>
         </h1>
-        <ul className="post-tags">
+        <ul className="post-tags p-tags">
           {post.tags.map((tag) => (
             <Tag key={tag} name={tag} />
           ))}
