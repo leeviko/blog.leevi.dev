@@ -2,10 +2,14 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 import { useParams } from "react-router-dom";
 import LoaderWrapper from "../../components/LoaderWrapper";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Tag from "../../components/Tag";
 import useGetAuthor from "../../hooks/useGetAuthor";
 import useGetPost from "../../hooks/useGetPost";
 import { AuthorType, PostType } from "../../types";
+
+import "../../styles/markdown.css";
 
 const Post = () => {
   const { postId } = useParams();
@@ -40,7 +44,13 @@ const Post = () => {
               <Tag key={tag} name={tag} />
             ))}
           </ul>
-          <div className="post-content">{post.content}</div>
+          <div className="post-content">
+            <ReactMarkdown
+              children={post.content}
+              remarkPlugins={[remarkGfm]}
+              className="markdown-body"
+            />
+          </div>
         </div>
       </div>
     </article>
