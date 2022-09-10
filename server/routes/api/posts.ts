@@ -1,3 +1,4 @@
+import cors from "cors";
 import express, { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
 import pool from "../../config/db";
@@ -5,6 +6,8 @@ import { auth } from "../../middleware/auth";
 import { convertToSlug } from "../../utils";
 
 const router = express.Router();
+
+router.use("/", cors());
 
 interface pgError extends Error {
   code?: string;

@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import Archive from "./components/Archive";
 import Post from "./features/posts/Post";
+import Login from "./components/Login";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home limit={10} cursor="" />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/archive" element={<Archive limit={10} cursor="" />} />
         <Route path="/posts">
           <Route path=":postId" element={<Post />} />
