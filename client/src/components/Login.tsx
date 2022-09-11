@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login, isAuth } from "../features/users/userSlice";
 import { AppDispatch } from "../store";
+import LoaderInline from "./LoaderInline";
 
 type Props = {};
 
@@ -69,7 +70,7 @@ const Login = (props: Props) => {
                 className="btn submit-btn"
                 disabled={loading}
               >
-                Submit
+                {loading ? <LoaderInline /> : "Submit"}
               </button>
             </div>
           </form>
