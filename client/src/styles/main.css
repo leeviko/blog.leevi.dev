@@ -120,7 +120,7 @@ h5 {
 
 /* NAVBAR */
 .navbar {
-  margin: 0.5rem 0 0 0;
+  margin: 1rem 0;
   display: flex;
   justify-content: center;
 }
@@ -132,6 +132,7 @@ h5 {
 .nav-items {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .nav-item {
@@ -175,15 +176,14 @@ h5 {
 }
 
 .post-tag {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   margin-right: 0.5rem;
   list-style: none;
   border-radius: 0.2rem;
-  padding: 0.1rem 0.25rem;
+  padding: 0 0.25rem;
 }
 
 .p-title {
-  line-height: 1.25;
   font-size: 1.2rem;
 }
 
@@ -205,9 +205,50 @@ h5 {
 }
 
 .post .p-title {
-  font-size: 1.5rem;
+  font-size: 2rem;
 }
+
+.post .post-tag {
+  margin-bottom: 1rem;
+}
+
 /* END OF POST */
+
+/* NEW POST PAGE */
+.new-post {
+  display: flex;
+  justify-content: center;
+}
+
+.new-post-container {
+  width: 600px;
+}
+
+.new-post-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.new-post-buttons button:first-child {
+  margin-right: 0.5rem;
+}
+
+.editor {
+  border: 1px solid black;
+}
+
+.editor input,
+.editor textarea {
+  border: none;
+  background: none;
+}
+
+.editor-top {
+  display: flex;
+  flex-direction: column;
+}
+
+/* END OF NEW POST PAGE */
 
 /* PAGINATION */
 .pagination {

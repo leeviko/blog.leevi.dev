@@ -32,12 +32,10 @@ const Login = (props: Props) => {
   };
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      dispatch(isAuth());
-      return;
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
     }
 
-    navigate("/", { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 

@@ -1,5 +1,11 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
+import Cookies from "js-cookie";
 
 import "./styles/main.css";
 
@@ -8,15 +14,41 @@ import Navbar from "./components/Navbar";
 import Archive from "./components/Archive";
 import Post from "./features/posts/Post";
 import Login from "./components/Login";
+import Profile from "./components/Profile";
+import NewPost from "./components/NewPost";
+import { useDispatch } from "react-redux";
+import { isAuth } from "./features/users/userSlice";
+import { useSelector } from "react-redux";
+import { AppDispatch } from "./store";
 
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const isAuthenticated = useSelector((state: any) => state.users.isAuth);
+
+  useEffect(() => {
+    if (!isAuthenticated && Cookies.get("user_sid")) {
+      dispatch(isAuth());
+    }
+  }, [isAuthenticated]);
+
   return (
     <Router>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home limit={10} cursor="" />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated != null && isAuthenticated ? (
+              <Login />
+            ) : (
+              <Navigate to="/" replace={true} />
+            )
+          }
+        />
         <Route path="/archive" element={<Archive limit={10} cursor="" />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/new-post" element={<NewPost />} />
         <Route path="/posts">
           <Route path=":postId" element={<Post />} />
         </Route>

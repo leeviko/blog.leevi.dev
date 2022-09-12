@@ -41,7 +41,7 @@ const Post = () => {
           <h1 className="post-title p-title">{post.title}</h1>
           <ul className="post-tags p-tags">
             {post.tags.map((tag) => (
-              <Tag key={tag} name={tag} />
+              <Tag key={tag} name={tag} postType="full" />
             ))}
           </ul>
           <div className="post-content">

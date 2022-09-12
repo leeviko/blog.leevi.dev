@@ -2,14 +2,18 @@ import React, { useEffect, useState } from "react";
 
 type Props = {
   name: string;
+  postType: "small" | "full";
 };
 
 const hexToRgbA = (hex: any, alpha = 1) => {
+  if (!hex) {
+    return "unset";
+  }
   const [r, g, b] = hex.match(/\w\w/g).map((x: any) => parseInt(x, 16));
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
-const Tag = ({ name }: Props) => {
+const Tag = ({ name, postType }: Props) => {
   const [color, setColor] = useState("");
 
   useEffect(() => {
@@ -86,7 +90,17 @@ const Tag = ({ name }: Props) => {
   }, []);
 
   return (
-    <li className="post-tag">
+    <li
+      style={
+        postType === "full"
+          ? {
+              backgroundColor: hexToRgbA(color, 0.5),
+              border: `1px solid ${color}`,
+            }
+          : { backgroundColor: "unset" }
+      }
+      className="post-tag"
+    >
       <span style={{ color }}># </span>
       {name}
     </li>

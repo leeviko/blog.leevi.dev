@@ -37,7 +37,7 @@ const PostSmall = ({ post }: Props) => {
         </h1>
         <ul className="post-tags p-tags">
           {post.tags.map((tag) => (
-            <Tag key={tag} name={tag} />
+            <Tag key={tag} name={tag} postType="small" />
           ))}
         </ul>
       </div>
