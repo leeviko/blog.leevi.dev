@@ -17,7 +17,7 @@ const Tag = ({ name, postType }: Props) => {
   const [color, setColor] = useState("");
 
   useEffect(() => {
-    switch (name) {
+    switch (name.trim()) {
       case "Programming":
       case "Technology":
         setColor("#458871");
@@ -87,7 +87,7 @@ const Tag = ({ name, postType }: Props) => {
         setColor("#458588");
         break;
     }
-  }, []);
+  }, [name]);
 
   return (
     <li
@@ -101,7 +101,7 @@ const Tag = ({ name, postType }: Props) => {
       }
       className="post-tag"
     >
-      <span style={{ color }}># </span>
+      <span style={{ color }}>#</span>
       {name}
     </li>
   );

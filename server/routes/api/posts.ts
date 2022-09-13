@@ -18,6 +18,7 @@ interface pgError extends Error {
  * @desc   Get public posts
  * @access Public
  */
+// TODO: Get author info also here
 router.get(
   "/",
   [

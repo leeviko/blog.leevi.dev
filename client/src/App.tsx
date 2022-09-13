@@ -29,7 +29,7 @@ function App() {
     if (!isAuthenticated && Cookies.get("user_sid")) {
       dispatch(isAuth());
     }
-  }, [isAuthenticated]);
+  }, [dispatch, isAuthenticated]);
 
   return (
     <Router>
@@ -40,9 +40,9 @@ function App() {
           path="/login"
           element={
             isAuthenticated != null && isAuthenticated ? (
-              <Login />
-            ) : (
               <Navigate to="/" replace={true} />
+            ) : (
+              <Login />
             )
           }
         />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login, isAuth } from "../features/users/userSlice";
+import { login } from "../features/users/userSlice";
 import { AppDispatch } from "../store";
 import LoaderInline from "./LoaderInline";
 
