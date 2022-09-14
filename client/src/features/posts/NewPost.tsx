@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import useForm from "../hooks/useForm";
-import { RootState } from "../store";
+import useForm from "../../hooks/useForm";
+import { RootState } from "../../store";
 import Editor from "./Editor";
 import Preview from "./Preview";
 

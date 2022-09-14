@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import remarkEmoji from "remark-emoji";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import Tag from "./Tag";
+import Tag from "../../components/Tag";
 
 type Props = {
   post: any;

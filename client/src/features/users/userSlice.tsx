@@ -3,7 +3,11 @@ import api from "../../api";
 
 export interface UserState {
   isAuth: boolean | null;
-  user: object | null;
+  user: {
+    id: string;
+    username: string;
+    created_at: string;
+  } | null;
   loading: boolean | null;
   error: string | undefined | null;
 }

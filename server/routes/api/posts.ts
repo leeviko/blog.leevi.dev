@@ -261,4 +261,94 @@ router.delete(
   }
 );
 
+/**
+ * @route  GET api/posts/drafts
+ * @desc   Get all drafts
+ * @access Private
+ */
+router.get(
+  "/",
+  [
+    query("limit").escape().trim().isNumeric().isLength({ max: 10 }),
+    query("cursor").escape().trim(),
+  ],
+  auth,
+  async (req: Request, res: Response) => {
+    let { limit, cursor, page } = req.query;
+
+    const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
+      "binary"
+    );
+    let sql;
+    let params: any;
+    params = [limit, decodedCursor];
+
+    switch (page) {
+      case "prev":
+        sql = `
+          SELECT draft_id, authorid, title, content, tags, private, created_at 
+          FROM post_drafts 
+          WHERE created_at > $2 ORDER BY created_at DESC LIMIT $1
+        `;
+        break;
+      case "next":
+      default:
+        sql = `
+          SELECT slug, authorid, title, tags, private, created_at 
+          FROM posts 
+          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1
+        `;
+        break;
+    }
+
+    if (!cursor || !decodedCursor) {
+      sql =
+        "SELECT slug, authorid, title, tags, private, created_at FROM posts ORDER BY created_at DESC LIMIT $1";
+      params = [limit];
+    }
+
+    pool.query(sql, params, (err, result) => {
+      if (err) {
+        return res.status(400).json({
+          msg: "Something went wrong while loading drafts",
+          err: err.message,
+        });
+      }
+      const { rowCount } = result;
+
+      const nextCursor: any = result.rows[result.rows.length - 1].created_at;
+
+      let encodedNextCursor: any = Buffer.from(
+        JSON.stringify(nextCursor)
+      ).toString("base64");
+
+      if (rowCount < 10) {
+        encodedNextCursor = null;
+      } else {
+        sql = `
+          SELECT slug, authorid, title, tags, private, created_at 
+          FROM posts 
+          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
+        `;
+
+        pool.query(sql, params, (err, result) => {
+          if (err) {
+            encodedNextCursor = null;
+            return;
+          }
+          if (result.rowCount === 0) {
+            encodedNextCursor = null;
+            return;
+          }
+        });
+      }
+
+      return res.json({
+        result: result.rows,
+        cursor: { prev: cursor || null, next: encodedNextCursor },
+      });
+    });
+  }
+);
+
 module.exports = router;
