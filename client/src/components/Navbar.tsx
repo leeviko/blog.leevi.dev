@@ -1,11 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { RootState } from "../store";
 
 // import HeaderLogo from "../assets/images/header-logo.svg";
 
 const Navbar = () => {
-  const isAuthenticated = useSelector((state: any) => state.users.isAuth);
+  const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
   const location = useLocation().pathname;
 
   return (

@@ -4,20 +4,23 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
 import PostList from "../features/posts/PostList";
 import { fetchPosts } from "../features/posts/postSlice";
-import { AppDispatch } from "../store";
+import { AppDispatch, RootState } from "../store";
 import Loader from "./Loader";
 import LoaderWrapper from "./LoaderWrapper";
 import Pagination from "./Pagination";
 
 type Props = {
   limit: number;
-  cursor: string;
+  cursor: {
+    prev: string | null;
+    next: string | null;
+  } | null;
 };
 
 const Archive = ({ limit, cursor }: Props) => {
   const [pageNum, setPageNum] = useState(1);
-  const pagination = useSelector((state: any) => state.posts.pagination);
-  const loading = useSelector((state: any) => state.posts.loading);
+  const pagination = useSelector((state: RootState) => state.posts.pagination);
+  const loading = useSelector((state: RootState) => state.posts.loading);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -30,7 +33,7 @@ const Archive = ({ limit, cursor }: Props) => {
       <div className="page-wrapper">
         <h1 className="section-title">archive</h1>
         <LoaderWrapper
-          loading={loading}
+          loading={loading !== null && loading}
           loaderComponent={<Loader />}
           delay={500}
         >

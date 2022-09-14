@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../features/users/userSlice";
-import { AppDispatch } from "../store";
+import { AppDispatch, RootState } from "../store";
 import LoaderInline from "./LoaderInline";
 
 type Props = {};
@@ -11,11 +11,11 @@ const Login = (props: Props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: any) => state.users.isAuth);
+  const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
   const navigate = useNavigate();
-  const errors = useSelector((state: any) => state.users.error);
+  const errors = useSelector((state: RootState) => state.users.error);
   const [localErrors, setLocalErrors] = useState("");
-  const loading = useSelector((state: any) => state.users.loading);
+  const loading = useSelector((state: RootState) => state.users.loading);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -66,7 +66,7 @@ const Login = (props: Props) => {
               <button
                 type="submit"
                 className="btn submit-btn"
-                disabled={loading}
+                disabled={loading != null && loading}
               >
                 {loading ? <LoaderInline /> : "Submit"}
               </button>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useForm from "../hooks/useForm";
+import { RootState } from "../store";
 import Editor from "./Editor";
 import Preview from "./Preview";
 
@@ -18,7 +19,7 @@ const NewPost = (props: Props) => {
   });
   const [mode, setMode] = useState<"edit" | "preview">("edit");
 
-  const isAuthenticated = useSelector((state: any) => state.users.isAuth);
+  const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
   const navigate = useNavigate();
   useEffect(() => {
     if (!isAuthenticated) {

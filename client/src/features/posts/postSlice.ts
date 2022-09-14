@@ -12,7 +12,10 @@ const postsAdapter = createEntityAdapter({
 export interface PostState {
   pagination: {
     limit: number;
-    cursor: string | null;
+    cursor: {
+      prev: string | null;
+      next: string | null;
+    } | null;
   };
   loading: boolean | null;
   error: string | undefined | null;

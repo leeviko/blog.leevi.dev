@@ -19,11 +19,11 @@ import NewPost from "./components/NewPost";
 import { useDispatch } from "react-redux";
 import { isAuth } from "./features/users/userSlice";
 import { useSelector } from "react-redux";
-import { AppDispatch } from "./store";
+import { AppDispatch, RootState } from "./store";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: any) => state.users.isAuth);
+  const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
 
   useEffect(() => {
     if (!isAuthenticated && Cookies.get("user_sid")) {
@@ -46,7 +46,7 @@ function App() {
             )
           }
         />
-        <Route path="/archive" element={<Archive limit={10} cursor="" />} />
+        <Route path="/archive" element={<Archive limit={10} cursor={null} />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/new-post" element={<NewPost />} />
         <Route path="/posts">
