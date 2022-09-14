@@ -10,6 +10,16 @@ type Props = {
   post: PostType;
 };
 
+export const PostSkeleton = () => {
+  return (
+    <div style={{ marginTop: "1rem" }}>
+      <Skeleton width={100} />
+      <Skeleton height={25} />
+      <Skeleton />
+    </div>
+  );
+};
+
 const PostSmall = ({ post }: Props) => {
   const author: AuthorType | any = useGetAuthor(post.authorid);
 
