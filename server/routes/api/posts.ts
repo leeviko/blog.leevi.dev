@@ -32,30 +32,26 @@ router.get(
       "binary"
     );
     let sql;
-    let params: any;
-    params = [limit, decodedCursor];
+    let params: any = [limit, decodedCursor];
+    let arrow: "<" | ">" | "" = "";
 
-    switch (page) {
-      case "prev":
-        sql = `
-          SELECT slug, authorid, title, tags, private, created_at 
-          FROM posts 
-          WHERE created_at > $2 ORDER BY created_at DESC LIMIT $1
-        `;
-        break;
-      case "next":
-      default:
-        sql = `
-          SELECT slug, authorid, title, tags, private, created_at 
-          FROM posts 
-          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1
-        `;
-        break;
+    if (page === "prev") {
+      arrow = ">";
+    } else {
+      arrow = "<";
     }
 
+    sql = `
+      SELECT slug, authorid, title, content, tags, private, created_at 
+      FROM posts 
+      WHERE created_at ${arrow} $2 ORDER BY created_at DESC LIMIT $1
+    `;
+
     if (!cursor || !decodedCursor) {
-      sql =
-        "SELECT slug, authorid, title, tags, private, created_at FROM posts ORDER BY created_at DESC LIMIT $1";
+      sql = `
+        SELECT slug, authorid, title, tags, private, created_at 
+        FROM posts ORDER BY created_at DESC LIMIT $1
+      `;
       params = [limit];
     }
 
@@ -74,25 +70,21 @@ router.get(
         JSON.stringify(nextCursor)
       ).toString("base64");
 
-      if (rowCount < 10) {
-        encodedNextCursor = null;
-      } else {
-        sql = `
-          SELECT slug, authorid, title, tags, private, created_at 
-          FROM posts 
+      if (rowCount >= (limit || 10)) {
+        const nextExistsQuery = `
+          SELECT created_at 
+          FROM posts
           WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
         `;
 
-        pool.query(sql, params, (err, result) => {
-          if (err) {
-            encodedNextCursor = null;
-            return;
-          }
-          if (result.rowCount === 0) {
+        pool.query(nextExistsQuery, params, (err, result) => {
+          if (err || result.rowCount === 0) {
             encodedNextCursor = null;
             return;
           }
         });
+      } else {
+        encodedNextCursor = null;
       }
 
       return res.json({
@@ -280,30 +272,26 @@ router.get(
       "binary"
     );
     let sql;
-    let params: any;
-    params = [limit, decodedCursor];
+    let params: any = [limit, decodedCursor];
+    let arrow: "<" | ">" | "" = "";
 
-    switch (page) {
-      case "prev":
-        sql = `
-          SELECT draft_id, authorid, title, content, tags, private, created_at 
-          FROM post_drafts 
-          WHERE created_at > $2 ORDER BY created_at DESC LIMIT $1
-        `;
-        break;
-      case "next":
-      default:
-        sql = `
-          SELECT slug, authorid, title, tags, private, created_at 
-          FROM posts 
-          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1
-        `;
-        break;
+    if (page === "prev") {
+      arrow = ">";
+    } else {
+      arrow = "<";
     }
 
+    sql = `
+      SELECT draft_id, authorid, title, content, tags, private, modified, created_at 
+      FROM post_drafts 
+      WHERE created_at ${arrow} $2 ORDER BY created_at DESC LIMIT $1
+    `;
+
     if (!cursor || !decodedCursor) {
-      sql =
-        "SELECT slug, authorid, title, tags, private, created_at FROM posts ORDER BY created_at DESC LIMIT $1";
+      sql = `
+        SELECT slug, authorid, title, tags, private, created_at 
+        FROM post_drafts ORDER BY created_at DESC LIMIT $1
+      `;
       params = [limit];
     }
 
@@ -322,25 +310,21 @@ router.get(
         JSON.stringify(nextCursor)
       ).toString("base64");
 
-      if (rowCount < 10) {
-        encodedNextCursor = null;
-      } else {
-        sql = `
-          SELECT slug, authorid, title, tags, private, created_at 
-          FROM posts 
+      if (rowCount >= (limit || 10)) {
+        const nextExistsQuery = `
+          SELECT created_at 
+          FROM post_drafts
           WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
         `;
 
-        pool.query(sql, params, (err, result) => {
-          if (err) {
-            encodedNextCursor = null;
-            return;
-          }
-          if (result.rowCount === 0) {
+        pool.query(nextExistsQuery, params, (err, result) => {
+          if (err || result.rowCount === 0) {
             encodedNextCursor = null;
             return;
           }
         });
+      } else {
+        encodedNextCursor = null;
       }
 
       return res.json({
