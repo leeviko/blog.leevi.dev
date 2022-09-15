@@ -33,6 +33,7 @@ const PostList = () => {
         delay={500}
       >
         {posts &&
+          !loading &&
           posts.map((post) => <PostSmall key={post.slug} post={post} />)}
       </LoaderWrapper>
     </div>
