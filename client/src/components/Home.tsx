@@ -14,7 +14,7 @@ const Home = ({ limit, cursor }: Props) => {
 
   useEffect(() => {
     dispatch(fetchPosts({ limit, cursor }));
-  }, []);
+  }, [cursor, dispatch, limit]);
 
   return (
     <div className="home-page page">

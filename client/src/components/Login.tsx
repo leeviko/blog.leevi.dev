@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { login } from "../features/users/userSlice";
 import { AppDispatch, RootState } from "../store";
 import LoaderInline from "./LoaderInline";
@@ -12,7 +12,6 @@ const Login = (props: Props) => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
-  const navigate = useNavigate();
   const errors = useSelector((state: RootState) => state.users.error);
   const [localErrors, setLocalErrors] = useState("");
   const loading = useSelector((state: RootState) => state.users.loading);
@@ -31,16 +30,11 @@ const Login = (props: Props) => {
     dispatch(login({ username, password }));
   };
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/", { replace: true });
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
-
   return (
     <div className="login-page page">
+      {loading === false && isAuthenticated && (
+        <Navigate to="/" replace={true} />
+      )}
       <div className="page-wrapper">
         <div className="login-form-wrapper">
           <h1 className="section-title">login</h1>

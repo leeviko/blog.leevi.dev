@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import Cookies from "js-cookie";
 import api from "../../api";
 
 export interface UserState {
@@ -41,6 +42,10 @@ export const login = createAsyncThunk("users/login", async (values: any) => {
 });
 
 export const isAuth = createAsyncThunk("users/isAuth", async () => {
+  if (!Cookies.get("user_sid")) {
+    throw new Error("Not logged in");
+  }
+
   try {
     const res = await api.get("/auth", { withCredentials: true });
 

@@ -1,20 +1,29 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { RootState } from "../store";
-
-// import HeaderLogo from "../assets/images/header-logo.svg";
+import { isAuth } from "../features/users/userSlice";
+import { AppDispatch, RootState } from "../store";
 
 const Navbar = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
   const location = useLocation().pathname;
+
+  useEffect(() => {
+    if (isAuthenticated === null && Cookies.get("user_sid")) {
+      if (
+        !location.startsWith("/profile") ||
+        !location.startsWith("/new-post")
+      ) {
+        dispatch(isAuth());
+      }
+    }
+  }, [dispatch, isAuthenticated, location]);
 
   return (
     <nav className="navbar">
       <div className="navbar-wrapper">
-        {/* <div className="navbar-logo">
-          <img alt="" src={HeaderLogo} />
-        </div> */}
         <div className="nav-items">
           <div
             className={`nav-item ${location === "/" ? "active" : "inactive"}`}
@@ -32,7 +41,7 @@ const Navbar = () => {
             <>
               <div
                 className={`nav-item ${
-                  location === "/profile" ? "active" : "inactive"
+                  location.startsWith("/profile") ? "active" : "inactive"
                 }`}
               >
                 <Link to="/profile">profile</Link>
