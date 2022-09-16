@@ -4,7 +4,7 @@ import { body, param, query, validationResult } from "express-validator";
 import { nanoid } from "nanoid";
 import pool from "../../config/db";
 import { auth } from "../../middleware/auth";
-import { convertToSlug } from "../../utils";
+import { convertToSlug } from "../../utils/convertToSlug";
 import { getUserById } from "../../utils/users";
 
 const router = express.Router();
