@@ -1,7 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
-import { fetchPosts } from "../features/posts/postSlice";
-import { AppDispatch } from "../store";
 
 type Props = {
   pageNum: number;
@@ -10,28 +7,21 @@ type Props = {
     prev: string | null;
     next: string | null;
   };
+  setMoveType: React.Dispatch<React.SetStateAction<"prev" | "next" | null>>;
 };
 
-const Pagination = ({ pageNum, setPageNum, cursor }: Props) => {
-  const dispatch = useDispatch<AppDispatch>();
-
+const Pagination = ({ pageNum, setPageNum, cursor, setMoveType }: Props) => {
   const handlePrev = () => {
-    if (cursor.prev) {
-      // TODO: Make this better
-      if (pageNum > 1) {
-        setPageNum(pageNum - 1);
-        if (pageNum >= 1) {
-          dispatch(
-            fetchPosts({ limit: 10, cursor: cursor.prev, page: "prev" })
-          );
-        }
-      }
+    if (cursor.prev && pageNum > 1) {
+      setMoveType("prev");
+      setPageNum(pageNum - 1);
     }
   };
+
   const handleNext = () => {
     if (cursor.next) {
+      setMoveType("next");
       setPageNum(pageNum + 1);
-      dispatch(fetchPosts({ limit: 10, cursor: cursor.next, page: "next" }));
     }
   };
 
