@@ -181,6 +181,7 @@ router.post(
       .withMessage("Content cannot be empty"),
     body("tags").isArray({ max: 20 }),
     body("isPrivate").isBoolean().trim().escape(),
+    body("status").trim().escape().default("draft"),
   ],
   auth,
   async (req: Request, res: Response) => {
@@ -189,17 +190,19 @@ router.post(
       return res.status(422).json({ errors: errors.array() });
     }
 
-    const { title, content, tags, isPrivate } = req.body;
+    const { title, content, tags, isPrivate, status } = req.body;
     const slug = convertToSlug(title);
+    const postId = nanoid();
     const authorId = req.session.user?.id;
-
     const newPost = {
+      postId,
       slug,
       authorId,
       title,
       content,
       tags,
       isPrivate,
+      status,
     };
 
     let user = await getUserById(authorId);
@@ -210,8 +213,8 @@ router.post(
 
     const query = {
       name: "create-post",
-      text: "INSERT INTO posts (slug, authorId, title, content, tags, private) VALUES ($1, $2, $3, $4, $5, $6)",
-      values: [slug, authorId, title, content, tags, isPrivate],
+      text: "INSERT INTO posts (postId, slug, authorId, title, content, tags, private, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      values: [postId, slug, authorId, title, content, tags, isPrivate, status],
     };
 
     pool.query(query, (err, result) => {
