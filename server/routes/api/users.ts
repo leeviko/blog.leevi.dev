@@ -86,6 +86,7 @@ router.post(
         const user = {
           id,
           username,
+          admin: null,
           created_at: new Date(),
         };
 

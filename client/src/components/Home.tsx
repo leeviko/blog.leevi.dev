@@ -13,7 +13,7 @@ const Home = ({ limit, cursor }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    dispatch(fetchPosts({ limit, cursor }));
+    dispatch(fetchPosts({ limit, cursor, status: "live" }));
   }, [cursor, dispatch, limit]);
 
   return (

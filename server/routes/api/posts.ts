@@ -1,59 +1,79 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
 import { body, param, query, validationResult } from "express-validator";
+import { nanoid } from "nanoid";
 import pool from "../../config/db";
 import { auth } from "../../middleware/auth";
 import { convertToSlug } from "../../utils";
+import { getUserById } from "../../utils/users";
 
 const router = express.Router();
+const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
 
-router.use("/", cors());
+router.use("/", corsOpts);
 
 interface pgError extends Error {
   code?: string;
 }
 
+interface IPostQuery {
+  limit: number;
+  cursor: string;
+  page: "prev" | "next" | null;
+  status: "draft" | "live" | "all" | null;
+}
+
 /**
  * @route  GET api/posts
- * @desc   Get public posts
+ * @desc   Get posts
  * @access Public
  */
 // TODO: Get author info also here
+// TODO: Show private posts only to the author and admin
 router.get(
   "/",
   [
-    query("limit").escape().trim().isNumeric().isLength({ max: 10 }),
+    query("limit")
+      .escape()
+      .trim()
+      .isNumeric()
+      .isLength({ max: 10 })
+      .default(10),
     query("cursor").escape().trim(),
+    query("page").escape().trim(),
+    query("status").escape().trim().default("live"),
   ],
-  async (req: Request, res: Response) => {
-    let { limit, cursor, page } = req.query;
+  async (req: Request<{}, {}, {}, IPostQuery>, res: Response) => {
+    let { limit, cursor, page, status } = req.query;
+    const decodedCursor = Buffer.from(cursor, "base64").toString("binary");
 
-    const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
-      "binary"
-    );
-    let sql;
-    let params: any = [limit, decodedCursor];
-    let arrow: "<" | ">" | "" = "";
-
-    if (page === "prev") {
-      arrow = ">";
-    } else {
-      arrow = "<";
-    }
-
-    sql = `
-      SELECT slug, authorid, title, content, tags, private, created_at 
-      FROM posts 
-      WHERE created_at ${arrow} $2 ORDER BY created_at DESC LIMIT $1
+    let user;
+    const params: Array<any> = [limit];
+    let sql = `
+      SELECT slug, authorid, title, content, tags, private, status, created_at
+      FROM posts
     `;
 
-    if (!cursor || !decodedCursor) {
-      sql = `
-        SELECT slug, authorid, title, tags, private, created_at 
-        FROM posts ORDER BY created_at DESC LIMIT $1
-      `;
-      params = [limit];
+    if (decodedCursor) {
+      params.push(decodedCursor);
+      if (page === "prev") {
+        sql += "WHERE created_at > $2";
+      } else {
+        sql += "WHERE created_at < $2";
+      }
     }
+
+    if (status === "draft") {
+      user = req.session.user;
+      if (user && !user.admin) {
+        params.push(user.id);
+        sql += decodedCursor ? " AND authorid = $3" : " WHERE authorid = $2";
+      }
+    } else {
+      sql += decodedCursor ? " AND status = 'live'" : " WHERE status = 'live'";
+    }
+
+    sql += " ORDER BY created_at DESC LIMIT $1";
 
     pool.query(sql, params, (err, result) => {
       if (err) {
@@ -64,17 +84,18 @@ router.get(
       }
       const { rowCount } = result;
 
-      const nextCursor: any = result.rows[result.rows.length - 1].created_at;
+      let nextCursor: any;
+      let encodedNextCursor: any;
+      if (rowCount >= limit) {
+        nextCursor = result.rows[result.rows.length - 1].created_at;
 
-      let encodedNextCursor: any = Buffer.from(
-        JSON.stringify(nextCursor)
-      ).toString("base64");
-
-      if (rowCount >= (limit || 10)) {
+        encodedNextCursor = Buffer.from(JSON.stringify(nextCursor)).toString(
+          "base64"
+        );
         const nextExistsQuery = `
           SELECT created_at 
           FROM posts
-          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
+          WHERE created_at < $2 LIMIT $1 + 1
         `;
 
         pool.query(nextExistsQuery, params, (err, result) => {
@@ -181,13 +202,11 @@ router.post(
       isPrivate,
     };
 
-    // Check if user exists
-    const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
-    const author = await pool.query(sql, [newPost.authorId]);
-
-    if (author.rowCount === 0) {
-      return res.status(400).json({ msg: "User doesnt exist" });
+    let user = await getUserById(authorId);
+    if (!user.ok || !user.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
     }
+    user = user.result;
 
     const query = {
       name: "create-post",
@@ -249,88 +268,6 @@ router.delete(
       }
 
       return res.json({ msg: "Post deleted", slug });
-    });
-  }
-);
-
-/**
- * @route  GET api/posts/drafts
- * @desc   Get all drafts
- * @access Private
- */
-router.get(
-  "/",
-  [
-    query("limit").escape().trim().isNumeric().isLength({ max: 10 }),
-    query("cursor").escape().trim(),
-  ],
-  auth,
-  async (req: Request, res: Response) => {
-    let { limit, cursor, page } = req.query;
-
-    const decodedCursor = Buffer.from(<string>cursor, "base64").toString(
-      "binary"
-    );
-    let sql;
-    let params: any = [limit, decodedCursor];
-    let arrow: "<" | ">" | "" = "";
-
-    if (page === "prev") {
-      arrow = ">";
-    } else {
-      arrow = "<";
-    }
-
-    sql = `
-      SELECT draft_id, authorid, title, content, tags, private, modified, created_at 
-      FROM post_drafts 
-      WHERE created_at ${arrow} $2 ORDER BY created_at DESC LIMIT $1
-    `;
-
-    if (!cursor || !decodedCursor) {
-      sql = `
-        SELECT slug, authorid, title, tags, private, created_at 
-        FROM post_drafts ORDER BY created_at DESC LIMIT $1
-      `;
-      params = [limit];
-    }
-
-    pool.query(sql, params, (err, result) => {
-      if (err) {
-        return res.status(400).json({
-          msg: "Something went wrong while loading drafts",
-          err: err.message,
-        });
-      }
-      const { rowCount } = result;
-
-      const nextCursor: any = result.rows[result.rows.length - 1].created_at;
-
-      let encodedNextCursor: any = Buffer.from(
-        JSON.stringify(nextCursor)
-      ).toString("base64");
-
-      if (rowCount >= (limit || 10)) {
-        const nextExistsQuery = `
-          SELECT created_at 
-          FROM post_drafts
-          WHERE created_at < $2 ORDER BY created_at DESC LIMIT $1 + 1
-        `;
-
-        pool.query(nextExistsQuery, params, (err, result) => {
-          if (err || result.rowCount === 0) {
-            encodedNextCursor = null;
-            return;
-          }
-        });
-      } else {
-        encodedNextCursor = null;
-      }
-
-      return res.json({
-        result: result.rows,
-        cursor: { prev: cursor || null, next: encodedNextCursor },
-      });
     });
   }
 );

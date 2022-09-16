@@ -67,6 +67,7 @@ router.post(
         const userObj = {
           id: user.id,
           username: user.username,
+          admin: user.admin,
           created_at: user.created_at,
         };
 
