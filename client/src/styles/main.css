@@ -186,6 +186,10 @@ h5 {
   display: flex;
 }
 
+.post .post-tags {
+  margin-bottom: 1rem;
+}
+
 .post-tag {
   display: flex;
   align-items: center;
@@ -224,10 +228,6 @@ h5 {
 
 .post .p-title {
   font-size: 2rem;
-}
-
-.post .post-tag {
-  margin-bottom: 1rem;
 }
 
 /* END OF POST */
