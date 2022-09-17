@@ -9,7 +9,7 @@ const postsAdapter = createEntityAdapter({
   selectId: (post: any) => post.slug,
 });
 
-export interface PostState {
+export interface IPostState {
   pagination: {
     limit: number;
     cursor: {
@@ -21,7 +21,7 @@ export interface PostState {
   error: string | undefined | null;
 }
 
-const initialState: PostState = postsAdapter.getInitialState({
+const initialState: IPostState = postsAdapter.getInitialState({
   pagination: {
     limit: 10,
     cursor: null,
@@ -32,11 +32,14 @@ const initialState: PostState = postsAdapter.getInitialState({
 
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
-  async (pagination: any) => {
-    const { limit, cursor, page } = pagination;
+  async (options: any) => {
+    const { limit, cursor, page, status } = options;
 
     try {
-      const res = await api.get("/posts", { params: { limit, cursor, page } });
+      const res = await api.get("/posts", {
+        params: { limit, cursor, page, status },
+        withCredentials: true,
+      });
 
       return res.data;
     } catch (err) {
@@ -134,6 +137,5 @@ export const {
 export const getPostsLoading = (state: any) => state.posts.loading;
 export const getPostsError = (state: any) => state.posts.error;
 export const getPostsPagination = (state: any) => state.posts.pagination;
-export const getCount = (state: any) => state.posts.count;
 
 export default postsSlice.reducer;
