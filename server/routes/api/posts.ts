@@ -29,7 +29,6 @@ interface IPostQuery {
  * @desc   Get posts
  * @access Public
  */
-// TODO: Get author info also here
 router.get(
   "/",
   [
@@ -51,15 +50,20 @@ router.get(
     const user = req.session.user || null;
     const params: any = { limit, decodedCursor, userId: "" };
     let sql = `
-      SELECT slug, authorid, title, content, tags, private, status, created_at
-      FROM posts WHERE 1=1
+      SELECT 
+        slug, 
+        posts.authorid, 
+        json_build_object('userId', users.id, 'username', users.username, 'created_at', users.created_at) AS author, 
+        title, content, tags, private, status, posts.created_at
+      FROM posts 
+      INNER JOIN users ON posts.authorid = users.id WHERE 1=1
     `;
 
     if (decodedCursor) {
       if (page === "prev") {
-        sql += " AND created_at > :decodedCursor";
+        sql += " AND posts.created_at > :decodedCursor";
       } else {
-        sql += " AND created_at < :decodedCursor";
+        sql += " AND posts.created_at < :decodedCursor";
       }
     }
 
@@ -67,10 +71,10 @@ router.get(
       params.userId = user.id;
       if (!user.admin) {
         sql +=
-          " AND CASE WHEN private = true THEN authorid = :userId ELSE true END";
+          " AND CASE WHEN private = true THEN posts.authorid = :userId ELSE true END";
       }
       if (status === "draft") {
-        sql += " AND authorid = :userId";
+        sql += " AND posts.authorid = :userId";
       } else {
         sql += " AND status = 'live'";
       }
@@ -78,7 +82,7 @@ router.get(
       sql += " AND private = false";
     }
 
-    sql += " ORDER BY created_at DESC LIMIT :limit";
+    sql += " ORDER BY posts.created_at DESC LIMIT :limit";
 
     pool.query(
       named(sql, { useNullForMissing: true })(params),
@@ -141,7 +145,15 @@ router.get(
     if (!slug) {
       return res.status(400).json({ msg: "Id not specified" });
     }
-    let sql = "SELECT * FROM posts WHERE slug = :slug";
+    let sql = `
+      SELECT 
+        slug, 
+        posts.authorid, 
+        json_build_object('userId', users.id, 'username', users.username, 'created_at', users.created_at) AS author, 
+        title, content, tags, private, status, posts.created_at
+      FROM posts 
+      INNER JOIN users ON posts.authorid = users.id WHERE slug = :slug
+    `;
     const params = { slug, userId: "" };
 
     if (user) {
