@@ -4,6 +4,7 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import api from "../../api";
+import { TPostQuery } from "../../types";
 
 const postsAdapter = createEntityAdapter({
   selectId: (post: any) => post.slug,
@@ -42,27 +43,47 @@ export const fetchPosts = createAsyncThunk(
       });
 
       return res.data;
-    } catch (err) {
+    } catch (err: any) {
       console.log("err: ", err);
+      throw new Error(err.response ? err.response.data.msg : err.message);
     }
   }
 );
 
-export const addPost = createAsyncThunk("posts/addPost", async (post) => {
-  const headers = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
+export const savePost = createAsyncThunk(
+  "posts/savePost",
+  async (post: TPostQuery) => {
+    const { title, content, tags, status } = post;
 
-  try {
-    const res = await api.post("/posts", post, headers);
+    if (!title || title.length <= 5) {
+      throw new Error("Title cannot less than 5 characters long");
+    }
 
-    return res.data;
-  } catch (err) {
-    console.log("err: ", err);
+    if (status === "live" && !content) {
+      throw new Error("Content cannot be empty");
+    }
+
+    if (tags && tags.length > 10) {
+      throw new Error("You can have up to 10 tags");
+    }
+
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    try {
+      const res = await api.post("/posts", post, headers);
+
+      return res.data;
+    } catch (err: any) {
+      console.log("err: ", err);
+      throw new Error(err.response ? err.response.data.msg : err.message);
+    }
   }
-});
+);
 
 export const deletePost = createAsyncThunk("posts/deletePost", async (id) => {
   const response = await api.delete(`/posts/${id}`);
@@ -92,28 +113,17 @@ const postsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      .addCase(addPost.fulfilled, (state: any, action) => {
-        action.payload.userId = Number(action.payload.userId);
-        action.payload.date = new Date().toISOString();
-        action.payload.reactions = {
-          thumbsUp: 0,
-          wow: 0,
-          heart: 0,
-          rocket: 0,
-          coffee: 0,
-        };
+      .addCase(savePost.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(savePost.fulfilled, (state: any, action) => {
         console.log(action.payload);
         postsAdapter.addOne(state, action.payload);
       })
-      // .addCase(updatePost.fulfilled, (state, action) => {
-      //   if (!action.payload?.id) {
-      //     console.log("Update could not complete");
-      //     console.log(action.payload);
-      //     return;
-      //   }
-      //   action.payload.date = new Date().toISOString();
-      //   postsAdapter.upsertOne(state, action.payload);
-      // })
+      .addCase(savePost.rejected, (state, action) => {
+        state.error = action.error.message;
+      })
+
       .addCase(deletePost.fulfilled, (state: any, action) => {
         if (!action.payload?.id) {
           console.log("Delete could not complete");

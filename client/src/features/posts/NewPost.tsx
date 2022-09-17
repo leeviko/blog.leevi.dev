@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../store";
+import { savePost } from "./postSlice";
 import withAuth from "../../components/WithAuth";
 import useForm from "../../hooks/useForm";
 import Editor from "./Editor";
@@ -7,12 +10,13 @@ import Preview from "./Preview";
 type Props = {};
 
 const NewPost = (props: Props) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [activeTag, setActiveTag] = useState("");
   const [tags, setTags] = useState<Array<string>>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [values, handleChange] = useForm({
     title: "",
-    tags: "",
+    tags: [],
     content: "",
   });
   const [mode, setMode] = useState<"edit" | "preview">("edit");
@@ -24,6 +28,11 @@ const NewPost = (props: Props) => {
     } else if (e.key === "Backspace" && activeTag.length === 0) {
       setTags((prev) => prev.slice(0, -1));
     }
+  };
+
+  const handleSave = (e: any) => {
+    const status = e.target.name;
+    dispatch(savePost({ ...values, status, isPrivate }));
   };
 
   return (
@@ -74,8 +83,20 @@ const NewPost = (props: Props) => {
                 />
                 <span>Private</span>
               </button>
-              <button className="btn publish-btn">Publish</button>
-              <button className="btn draft-btn">Save draft</button>
+              <button
+                name="live"
+                className="btn publish-btn"
+                onClick={handleSave}
+              >
+                Publish
+              </button>
+              <button
+                name="draft"
+                className="btn draft-btn"
+                onClick={handleSave}
+              >
+                Save draft
+              </button>
             </div>
           </div>
         </div>
