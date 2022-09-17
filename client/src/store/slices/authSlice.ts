@@ -20,7 +20,7 @@ const initialState: UserState = {
   error: null,
 };
 
-export const login = createAsyncThunk("users/login", async (values: any) => {
+export const login = createAsyncThunk("auth/login", async (values: any) => {
   const { username, password } = values;
 
   const headers = {
@@ -41,7 +41,7 @@ export const login = createAsyncThunk("users/login", async (values: any) => {
   }
 });
 
-export const isAuth = createAsyncThunk("users/isAuth", async () => {
+export const isAuth = createAsyncThunk("auth/isAuth", async () => {
   if (!Cookies.get("user_sid")) {
     throw new Error("Not logged in");
   }
@@ -55,8 +55,8 @@ export const isAuth = createAsyncThunk("users/isAuth", async () => {
   }
 });
 
-const usersSlice = createSlice({
-  name: "users",
+const authSlice = createSlice({
+  name: "auth",
   initialState,
   reducers: {},
   extraReducers(builder) {
@@ -93,8 +93,8 @@ const usersSlice = createSlice({
   },
 });
 
-export const getUserLoading = (state: any) => state.users.loading;
-export const getUserError = (state: any) => state.users.error;
-export const getCount = (state: any) => state.users.count;
+export const getUserLoading = (state: any) => state.auth.loading;
+export const getUserError = (state: any) => state.auth.error;
+export const getCount = (state: any) => state.auth.count;
 
-export default usersSlice.reducer;
+export default authSlice.reducer;

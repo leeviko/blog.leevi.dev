@@ -2,10 +2,7 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 import { useSelector } from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper";
-import {
-  getPostsLoading,
-  selectAllPosts,
-} from "../../features/posts/postSlice";
+import { getPostsLoading, selectAllPosts } from "../../store/slices/postSlice";
 
 import PostSmall from "./PostSmall";
 

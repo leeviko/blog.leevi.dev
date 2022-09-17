@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { isAuth } from "../features/users/userSlice";
-import { AppDispatch, RootState } from "../store";
+import { isAuth } from "../store/slices/authSlice";
+import { AppDispatch, RootState } from "../store/store";
 
 const Navbar = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuth);
   const location = useLocation().pathname;
 
   useEffect(() => {

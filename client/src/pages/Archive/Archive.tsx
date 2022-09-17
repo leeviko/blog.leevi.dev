@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from "react";
 import "react-loading-skeleton/dist/skeleton.css";
 import { useDispatch, useSelector } from "react-redux";
-import PostList from "../features/posts/PostList";
+import PostList from "../Post/PostList";
 import {
   fetchPosts,
   getPostsLoading,
   selectAllPosts,
-} from "../features/posts/postSlice";
-import { AppDispatch, RootState } from "../store";
-import Pagination from "./Pagination";
+} from "../../store/slices/postSlice";
+import { AppDispatch, RootState } from "../../store/store";
+import Pagination from "../../components/Pagination";
 
 type Props = {
   limit: number;
