@@ -2,8 +2,8 @@ import Cookies from "js-cookie";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getUserLoading, isAuth } from "../features/users/userSlice";
-import { AppDispatch, RootState } from "../store";
+import { getUserLoading, isAuth } from "../store/slices/authSlice";
+import { AppDispatch, RootState } from "../store/store";
 
 type Props = {
   children: any;
@@ -13,7 +13,7 @@ type Props = {
 const WithAuth = ({ children, redirect = "/" }: Props) => {
   const loading = useSelector(getUserLoading);
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector((state: RootState) => state.users.isAuth);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuth);
   const navigate = useNavigate();
 
   useEffect(() => {

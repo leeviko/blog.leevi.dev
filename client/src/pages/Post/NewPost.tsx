@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store";
-import { savePost } from "./postSlice";
+import { AppDispatch } from "../../store/store";
+import { savePost } from "../../store/slices/postSlice";
 import withAuth from "../../components/WithAuth";
 import useForm from "../../hooks/useForm";
-import Editor from "./Editor";
-import Preview from "./Preview";
+import Editor from "./PostEditor";
+import Preview from "./PostPreview";
 
 type Props = {};
 

@@ -1,16 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Home from "./components/Home";
+import Home from "./pages/Home/Home";
 import Navbar from "./components/Navbar";
-import Archive from "./components/Archive";
-import Post from "./features/posts/Post";
-import Login from "./components/Login";
-import NewPost from "./features/posts/NewPost";
-import Profile from "./features/users/Profile";
-import ProfilePosts from "./features/users/ProfilePosts";
-import ProfileSettings from "./features/users/ProfileSettings";
-import ProfileMain from "./features/users/ProfileMain";
+import Archive from "./pages/Archive/Archive";
+import Post from "./pages/Post/Post";
+import Login from "./pages/Login/Login";
+import NewPost from "./pages/Post/NewPost";
+import Profile from "./pages/Profile/Profile";
+import ProfilePosts from "./pages/Profile/ProfilePosts";
+import ProfileSettings from "./pages/Profile/ProfileSettings";
+import ProfileMain from "./pages/Profile/ProfileMain";
 
 import "./styles/main.css";
 

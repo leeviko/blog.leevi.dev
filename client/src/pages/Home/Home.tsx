@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import PostList from "../features/posts/PostList";
-import { fetchPosts } from "../features/posts/postSlice";
-import { AppDispatch } from "../store";
+import PostList from "../Post/PostList";
+import { fetchPosts } from "../../store/slices/postSlice";
+import { AppDispatch } from "../../store/store";
 
 type Props = {
   limit: number;
