@@ -163,21 +163,21 @@ h5 {
 /* END OF POST LIST */
 
 /* SMALL POST */
-.p-author {
+.post-author {
   font-size: 0.9rem;
 }
 
-.p-author .author-name {
+.post-author .post-author-name {
   color: var(--black);
   margin-right: 0.25rem;
   font-weight: bold;
 }
 
-.p-author .date {
+.post-author .post-date {
   opacity: 0.75;
 }
 
-.p-flag {
+.post-flag {
   border-radius: 0.3rem;
   font-size: 0.9rem;
   color: var(--white);
@@ -185,11 +185,11 @@ h5 {
   padding: 0 0.25rem;
 }
 
-.p-flag.private {
+.post-flag.private {
   background-color: var(--red-light);
 }
 
-.p-flag.draft {
+.post-flag.draft {
   background-color: var(--t-yellow);
 }
 
@@ -221,12 +221,12 @@ h5 {
   margin-right: 0.15rem;
 }
 
-.p-title {
+.post-small .post-title {
   font-size: 1.2rem;
 }
 
-.p-title,
-.p-title a {
+.post-small .post-title,
+.post-small .post-title a {
   color: var(--black);
   text-decoration: none;
 }
@@ -243,7 +243,7 @@ h5 {
   width: 600px;
 }
 
-.post .p-title {
+.post .post-title {
   font-size: 2rem;
 }
 
