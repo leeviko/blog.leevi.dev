@@ -202,7 +202,7 @@ router.post(
       .escape()
       .isLength({ min: 5 })
       .withMessage("Title cannot less than 5 characters long"),
-    body("content").trim().escape(),
+    body("content").trim(),
     body("tags").isArray({ max: 10 }),
     body("isPrivate").isBoolean().trim().escape(),
     body("status").trim().escape().isIn(["live", "draft"]).default("draft"),
