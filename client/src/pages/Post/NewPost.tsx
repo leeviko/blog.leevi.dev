@@ -16,7 +16,6 @@ const NewPost = (props: Props) => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [values, handleChange] = useForm({
     title: "",
-    tags: [],
     content: "",
   });
   const [mode, setMode] = useState<"edit" | "preview">("edit");
@@ -32,7 +31,7 @@ const NewPost = (props: Props) => {
 
   const handleSave = (e: any) => {
     const status = e.target.name;
-    dispatch(savePost({ ...values, status, isPrivate }));
+    dispatch(savePost({ ...values, tags, status, isPrivate }));
   };
 
   return (
