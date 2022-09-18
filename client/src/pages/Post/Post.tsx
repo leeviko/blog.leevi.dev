@@ -21,6 +21,10 @@ const Post = () => {
           <div className="post-author p-author">
             <span className="author-name">{post?.author?.username}</span>
             <span className="date">{formatDate.toLocaleDateString()}</span>
+            {post?.private && <span className="p-flag private">Private</span>}
+            {post?.status === "draft" && (
+              <span className="p-flag draft">Draft</span>
+            )}
           </div>
           <h1 className="post-title p-title">{post?.title}</h1>
           <ul className="post-tags p-tags">

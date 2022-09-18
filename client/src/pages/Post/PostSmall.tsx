@@ -27,6 +27,10 @@ const PostSmall = ({ post }: Props) => {
         <div className="post-small-author p-author">
           <span className="author-name">{post.author?.username}</span>
           <span className="date">{formatDate.toLocaleDateString()}</span>
+          {post.private && <span className="p-flag private">Private</span>}
+          {post.status === "draft" && (
+            <span className="p-flag draft">Draft</span>
+          )}
         </div>
         <h1 className="post-small-title p-title">
           <Link to={`/posts/${post.slug}`}>{post.title}</Link>

@@ -6,6 +6,7 @@
   --gray-hover-opa: rgb(89, 109, 113, 0.5);
   --aqua: #427b58;
   --red: #9d0006;
+  --red-light: #a51b20;
   --green: #07781f;
   --green-hover: #065717;
   --blue: #076678;
@@ -174,6 +175,22 @@ h5 {
 
 .p-author .date {
   opacity: 0.75;
+}
+
+.p-flag {
+  border-radius: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--white);
+  margin-left: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.p-flag.private {
+  background-color: var(--red-light);
+}
+
+.p-flag.draft {
+  background-color: var(--t-yellow);
 }
 
 .post-small,
