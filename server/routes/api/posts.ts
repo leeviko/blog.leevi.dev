@@ -166,8 +166,7 @@ router.get(
       sql += " AND private = false";
     }
     sql += " LIMIT 1";
-    console.log(sql);
-    console.log(slug);
+
     pool.query(
       named(sql, { useNullForMissing: true })(params),
       (err, result) => {
