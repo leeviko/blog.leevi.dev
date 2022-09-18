@@ -166,7 +166,8 @@ router.get(
       sql += " AND private = false";
     }
     sql += " LIMIT 1";
-
+    console.log(sql);
+    console.log(slug);
     pool.query(
       named(sql, { useNullForMissing: true })(params),
       (err, result) => {
@@ -215,9 +216,20 @@ router.post(
     }
 
     const { title, content, tags, isPrivate, status } = req.body;
-    const slug = convertToSlug(title);
+    let slug = convertToSlug(title);
     const postId = nanoid();
     const authorId = req.session.user?.id;
+
+    let user = await getUserById(authorId);
+    if (!user.ok || !user.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
+    }
+    user = user.result;
+
+    if (status === "draft") {
+      slug += `--draft-${new Date().getTime()}`;
+    }
+
     const newPost = {
       postId,
       slug,
@@ -229,23 +241,13 @@ router.post(
       status,
     };
 
-    let user = await getUserById(authorId);
-    if (!user.ok || !user.result) {
-      return res.status(400).json({ msg: "Something went wrong" });
-    }
-    user = user.result;
-
-    if (status === "draft") {
-      newPost.slug += `--draft-${new Date().getTime()}`;
-    }
-
     const sql = `
       INSERT INTO posts (postId, slug, authorId, title, content, tags, private, status) 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `;
     const params = [
       postId,
-      slug,
+      newPost.slug,
       authorId,
       title,
       content,
