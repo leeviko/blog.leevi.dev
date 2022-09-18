@@ -236,7 +236,7 @@ router.post(
     user = user.result;
 
     if (status === "draft") {
-      newPost.slug += `--draft-${new Date()}`;
+      newPost.slug += `--draft-${new Date().getTime()}`;
     }
 
     const sql = `
