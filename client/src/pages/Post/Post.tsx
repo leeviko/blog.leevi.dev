@@ -1,12 +1,11 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import useGetPost from "../../hooks/useGetPost";
 import { TPostResult } from "../../types";
 
 import "../../styles/markdown.css";
 import PostHeader from "./PostHeader";
+import PostMarkdown from "./PostMarkdown";
 
 const Post = () => {
   const { postId } = useParams();
@@ -18,11 +17,7 @@ const Post = () => {
         <div className="post-wrapper">
           {post && <PostHeader post={post} type="full" />}
           <div className="post-content">
-            <ReactMarkdown
-              children={post?.content || ""}
-              remarkPlugins={[remarkGfm]}
-              className="markdown-body"
-            />
+            <PostMarkdown postContent={post?.content || ""} />
           </div>
         </div>
       </div>
