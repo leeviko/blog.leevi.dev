@@ -85,11 +85,16 @@ export const savePost = createAsyncThunk(
   }
 );
 
-export const deletePost = createAsyncThunk("posts/deletePost", async (id) => {
-  const response = await api.delete(`/posts/${id}`);
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (postId: string) => {
+    const response = await api.delete(`/posts/${postId}`, {
+      withCredentials: true,
+    });
 
-  return response.data;
-});
+    return response.data;
+  }
+);
 
 const postsSlice = createSlice({
   name: "posts",
@@ -117,19 +122,18 @@ const postsSlice = createSlice({
         state.loading = true;
       })
       .addCase(savePost.fulfilled, (state: any, action) => {
-        console.log(action.payload);
+        state.loading = false;
         postsAdapter.addOne(state, action.payload);
       })
       .addCase(savePost.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.error.message;
       })
-
+      .addCase(deletePost.pending, (state, action) => {
+        state.loading = true;
+      })
       .addCase(deletePost.fulfilled, (state: any, action) => {
-        if (!action.payload?.id) {
-          console.log("Delete could not complete");
-          console.log(action.payload);
-          return;
-        }
+        state.loading = false;
         const { id } = action.payload;
         postsAdapter.removeOne(state, id);
       });

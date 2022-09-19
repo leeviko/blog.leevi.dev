@@ -148,6 +148,7 @@ router.get(
     }
     let sql = `
       SELECT 
+        postid,
         slug, 
         posts.authorid, 
         json_build_object('userId', users.id, 'username', users.username, 'created_at', users.created_at) AS author, 
@@ -383,44 +384,42 @@ router.put(
 );
 
 /**
- * @route  DELETE api/posts/:postid
+ * @route  DELETE api/posts/:postId
  * @desc   Delete a post
  * @access Private
  */
 router.delete(
-  "/:id",
-  [param("postid").escape().trim()],
+  "/:postId",
+  [param("postId").escape().trim()],
   auth,
   async (req: Request, res: Response) => {
-    const { postid } = req.params;
-    const userId = req.session.user?.id;
+    const { postId } = req.params;
 
-    // Check if user exists
-    const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
-    const author = await pool.query(sql, [userId]);
-
-    if (author.rowCount === 0) {
-      return res.status(400).json({ msg: "User doesnt exist" });
+    const user = req.session.user;
+    let userExists = await getUserById(user?.id);
+    if (!userExists.ok || !userExists.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
     }
 
-    const query = {
-      name: "delete-post",
-      text: "DELETE FROM posts WHERE slug = $1 AND authorId = $2",
-      values: [postid, userId],
-    };
+    let sql = "DELETE FROM posts WHERE postid = $1";
+    const params: any[] = [postId];
 
-    pool.query(query, (err, result) => {
+    if (!user?.admin) {
+      params.push(user?.id);
+      sql += " AND authorId = $2";
+    }
+
+    pool.query(sql, params, (err, result) => {
       if (err) {
         return res
           .status(400)
           .json({ msg: "Couldnt delete post", err: err.message });
       }
-
       if (result.rowCount === 0) {
         return res.status(404).json({ msg: "Post not found" });
       }
 
-      return res.json({ msg: "Post deleted", postid });
+      return res.json({ msg: "Post deleted", postId });
     });
   }
 );

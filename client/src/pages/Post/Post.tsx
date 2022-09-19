@@ -8,9 +8,12 @@ import PostHeader from "./PostHeader";
 import PostBody from "./PostBody";
 import PostSidebar from "./PostSidebar";
 import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { AppDispatch, RootState } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { deletePost } from "../../store/slices/postSlice";
 
 const Post = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const { postId } = useParams();
   const navigate = useNavigate();
   const post: TPostResult | null = useGetPost(postId);
@@ -21,7 +24,11 @@ const Post = () => {
     navigate("edit");
   };
   const handleUnpublish = () => {};
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    if (post && (user?.id === post?.authorid || user?.admin)) {
+      dispatch(deletePost(post.postid));
+    }
+  };
 
   return (
     <article className="post-container">
