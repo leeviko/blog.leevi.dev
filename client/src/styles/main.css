@@ -7,6 +7,8 @@
   --aqua: #427b58;
   --red: #9d0006;
   --red-light: #a51b20;
+  --red-muted: #ba3631;
+  --red-muted-hover: #902a26;
   --green: #07781f;
   --green-hover: #065717;
   --blue: #076678;
@@ -239,7 +241,7 @@ h5 {
   margin: 0 0 2rem 0;
 }
 
-.post {
+.post-content {
   width: 600px;
 }
 
@@ -259,7 +261,8 @@ h5 {
   width: 800px;
 }
 
-.new-post-wrapper {
+.new-post-wrapper,
+.post-wrapper {
   display: flex;
 }
 
@@ -358,17 +361,17 @@ h5 {
   padding: 0.5rem;
 }
 
-.new-post .sidebar-actions {
+.post-sidebar-actions {
   margin: 0.5rem;
   display: flex;
   flex-direction: column;
 }
 
-.new-post-sidebar button {
+.post-sidebar button {
   margin-bottom: 0.25rem;
 }
 
-.new-post .checkbox {
+.post-sidebar .checkbox {
   display: flex;
   align-items: center;
   border: none;
@@ -376,22 +379,22 @@ h5 {
   font-family: inherit;
 }
 
-.new-post .checkbox .tick {
+.post-sidebar .checkbox .tick {
   margin-right: 0.25rem;
   border-radius: 0.2rem;
   width: 20px;
   height: 20px;
 }
 
-.new-post .checkbox .tick.checked {
+.post-sidebar .checkbox .tick.checked {
   background-color: var(--t-blue);
 }
-.new-post .checkbox .tick.unchecked {
+.post-sidebar .checkbox .tick.unchecked {
   border: 1px solid var(--black);
   background: none;
 }
 
-.new-post-sidebar .btn {
+.post-sidebar .btn {
   width: 80px;
   transition: 0.15s;
   border: none;
@@ -402,19 +405,38 @@ h5 {
   cursor: pointer;
 }
 
-.new-post .publish-btn {
+.post-sidebar .publish-btn {
   background-color: var(--green);
 }
 
-.new-post .publish-btn:hover {
+.post-sidebar .publish-btn:hover {
   background-color: var(--green-hover);
 }
-.new-post .draft-btn:hover {
+.post-sidebar .draft-btn:hover {
   background-color: var(--gray-hover);
 }
 
-.new-post .draft-btn {
+.post-sidebar .draft-btn {
   background-color: var(--gray);
+}
+
+.post-sidebar .edit-btn {
+  background-color: var(--green);
+  margin-bottom: 1rem;
+}
+
+.post-sidebar .unpublish-btn,
+.post-sidebar .delete-btn {
+  background-color: var(--red-muted);
+}
+
+.post-sidebar .edit-btn:hover {
+  background-color: var(--green-hover);
+}
+
+.post-sidebar .unpublish-btn:hover,
+.post-sidebar .delete-btn:hover {
+  background-color: var(--red-muted-hover);
 }
 
 /* END OF NEW POST PAGE */

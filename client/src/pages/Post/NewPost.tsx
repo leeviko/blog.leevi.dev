@@ -6,6 +6,7 @@ import withAuth from "../../components/WithAuth";
 import useForm from "../../hooks/useForm";
 import Editor from "./PostEditor";
 import Preview from "./PostPreview";
+import PostSidebar from "./PostSidebar";
 
 type Props = {};
 
@@ -71,33 +72,25 @@ const NewPost = (props: Props) => {
           ) : (
             <Preview post={values} tags={tags} />
           )}
-          <div className="new-post-sidebar">
-            <div className="sidebar-actions">
-              <button
-                onClick={() => setIsPrivate(!isPrivate)}
-                className="checkbox"
-              >
-                <div
-                  className={`tick ${isPrivate ? "checked" : "unchecked"}`}
-                />
-                <span>Private</span>
-              </button>
-              <button
-                name="live"
-                className="btn publish-btn"
-                onClick={handleSave}
-              >
-                Publish
-              </button>
-              <button
-                name="draft"
-                className="btn draft-btn"
-                onClick={handleSave}
-              >
-                Save draft
-              </button>
-            </div>
-          </div>
+          <PostSidebar>
+            <button
+              onClick={() => setIsPrivate(!isPrivate)}
+              className="checkbox"
+            >
+              <div className={`tick ${isPrivate ? "checked" : "unchecked"}`} />
+              <span>Private</span>
+            </button>
+            <button
+              name="live"
+              className="btn publish-btn"
+              onClick={handleSave}
+            >
+              Publish
+            </button>
+            <button name="draft" className="btn draft-btn" onClick={handleSave}>
+              Save draft
+            </button>
+          </PostSidebar>
         </div>
       </div>
     </div>

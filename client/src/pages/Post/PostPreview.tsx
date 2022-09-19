@@ -1,6 +1,6 @@
 import React from "react";
 import Tag from "../../components/Tag";
-import PostMarkdown from "./PostMarkdown";
+import PostBody from "./PostBody";
 
 type Props = {
   post: any;
@@ -19,9 +19,7 @@ const Preview = ({ post, tags }: Props) => {
                 <Tag key={tag} name={tag} postType="full" />
               ))}
             </ul>
-            <div className="post-content">
-              <PostMarkdown postContent={post.content} />
-            </div>
+            <PostBody postContent={post.content} />
           </div>
         </div>
       </article>
