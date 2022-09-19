@@ -15,6 +15,14 @@ interface pgError extends Error {
   code?: string;
 }
 
+export type TUserResult = {
+  id: string;
+  username: string;
+  admin: boolean | null;
+  description: string | null;
+  created_at: Date;
+};
+
 /**
  * @route  POST api/users
  * @desc   Create new user

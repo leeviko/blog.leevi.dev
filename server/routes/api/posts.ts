@@ -7,6 +7,7 @@ import { pg as named } from "yesql";
 import { auth } from "../../middleware/auth";
 import { convertToSlug } from "../../utils/convertToSlug";
 import { getUserById } from "../../utils/users";
+import { TUserResult } from "./users";
 
 const router = express.Router();
 const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
@@ -219,11 +220,10 @@ router.post(
     const postId = nanoid();
     const authorId = req.session.user?.id;
 
-    let user = await getUserById(authorId);
-    if (!user.ok || !user.result) {
+    let userRes = await getUserById(authorId);
+    if (!userRes.ok || !userRes.result) {
       return res.status(400).json({ msg: "Something went wrong" });
     }
-    user = user.result;
 
     if (status === "draft") {
       slug += `--draft-${new Date().getTime()}`;
@@ -271,16 +271,128 @@ router.post(
 );
 
 /**
- * @route  DELETE api/posts/:slug
+ * @route  PUT api/posts/:postId
+ * @desc   Update a post
+ * @access Private
+ */
+router.put(
+  "/:postId",
+  [
+    param("postId").trim().escape(),
+    body("title")
+      .optional()
+      .trim()
+      .escape()
+      .isLength({ min: 5 })
+      .withMessage("Title cannot less than 5 characters long"),
+    body("content").optional().trim(),
+    body("tags").optional().isArray({ max: 10 }),
+    body("isPrivate").optional().isBoolean().trim().escape(),
+    body("status")
+      .optional()
+      .trim()
+      .escape()
+      .isIn(["live", "draft"])
+      .default("draft"),
+  ],
+  auth,
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    const postId = req.params.postId;
+    const { title, content, tags, isPrivate, status } = req.body;
+
+    const user = req.session.user;
+    let userExists = await getUserById(user?.id);
+    if (!userExists.ok || !userExists.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
+    }
+
+    let sql = "UPDATE posts";
+    let params: any = {
+      title,
+      slug: "",
+      content,
+      tags,
+      isPrivate,
+      status,
+      postId,
+    };
+
+    let updatedColCount = 0;
+    if (title && title.length >= 5) {
+      params.slug = convertToSlug(title);
+      sql += " SET title = :title, slug = :slug";
+      updatedColCount++;
+    }
+    if (content) {
+      if (updatedColCount === 0) {
+        sql += " SET content = :content";
+        updatedColCount++;
+        return;
+      }
+      sql += ", content = :content";
+      updatedColCount++;
+    }
+    if (tags) {
+      if (updatedColCount === 0) {
+        sql += " SET tags = :tags";
+        updatedColCount++;
+        return;
+      }
+      sql += ", tags = :tags";
+      updatedColCount++;
+    }
+    if (typeof isPrivate !== "undefined") {
+      if (updatedColCount === 0) {
+        sql += " SET private = :isPrivate";
+        updatedColCount++;
+        return;
+      }
+      sql += ", private = :isPrivate";
+      updatedColCount++;
+    }
+    if (status) {
+      if (updatedColCount === 0) {
+        sql += " SET status = :status";
+        updatedColCount++;
+        return;
+      }
+      sql += ", status = :status";
+      updatedColCount++;
+    }
+
+    if (updatedColCount === 0) {
+      return res.status(400).json({ msg: "Nothing to update" });
+    }
+
+    sql += " WHERE postid = :postId";
+
+    pool.query(named(sql)(params), (err, result) => {
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: "Updating post failed", err: err.message });
+      }
+
+      return res.json({ msg: "Post updated", postId });
+    });
+  }
+);
+
+/**
+ * @route  DELETE api/posts/:postid
  * @desc   Delete a post
  * @access Private
  */
 router.delete(
-  "/:slug",
-  [param("slug").escape().trim()],
+  "/:id",
+  [param("postid").escape().trim()],
   auth,
   async (req: Request, res: Response) => {
-    const { slug } = req.params;
+    const { postid } = req.params;
     const userId = req.session.user?.id;
 
     // Check if user exists
@@ -294,7 +406,7 @@ router.delete(
     const query = {
       name: "delete-post",
       text: "DELETE FROM posts WHERE slug = $1 AND authorId = $2",
-      values: [slug, userId],
+      values: [postid, userId],
     };
 
     pool.query(query, (err, result) => {
@@ -308,7 +420,7 @@ router.delete(
         return res.status(404).json({ msg: "Post not found" });
       }
 
-      return res.json({ msg: "Post deleted", slug });
+      return res.json({ msg: "Post deleted", postid });
     });
   }
 );
