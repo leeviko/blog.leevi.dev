@@ -158,6 +158,38 @@ h5 {
 }
 /* END OF NAVBAR */
 
+/* CONFIRM DIALOG */
+.dialog {
+  position: absolute;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.5);
+}
+
+.dialog-actions {
+  margin: 0.2rem 0 0 0;
+}
+
+.dialog .btn {
+  transition: 0.15s;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  border-radius: 0.2rem;
+  padding: 0 0.5rem;
+  color: var(--white);
+}
+
+.dialog .btn:first-child {
+  margin-right: 0.25rem;
+}
+
+/* END OF CONFIRM DIALOG */
+
 /* POST LIST */
 .post-list {
   max-width: 550px;
@@ -405,37 +437,36 @@ h5 {
   cursor: pointer;
 }
 
-.post-sidebar .publish-btn {
+.publish-btn {
   background-color: var(--green);
 }
 
-.post-sidebar .publish-btn:hover {
+.draft-btn {
+  background-color: var(--gray);
+}
+.publish-btn:hover {
   background-color: var(--green-hover);
 }
-.post-sidebar .draft-btn:hover {
+.draft-btn:hover {
   background-color: var(--gray-hover);
 }
 
-.post-sidebar .draft-btn {
-  background-color: var(--gray);
-}
-
-.post-sidebar .edit-btn {
+.edit-btn {
   background-color: var(--green);
   margin-bottom: 1rem;
 }
 
-.post-sidebar .unpublish-btn,
-.post-sidebar .delete-btn {
+.unpublish-btn,
+.delete-btn {
   background-color: var(--red-muted);
 }
 
-.post-sidebar .edit-btn:hover {
+.edit-btn:hover {
   background-color: var(--green-hover);
 }
 
-.post-sidebar .unpublish-btn:hover,
-.post-sidebar .delete-btn:hover {
+.unpublish-btn:hover,
+.delete-btn:hover {
   background-color: var(--red-muted-hover);
 }
 
