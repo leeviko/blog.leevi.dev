@@ -1,15 +1,12 @@
 import React from "react";
 
-export type TDialog = {
+export type TDialogProps = {
   yes?: string;
   no?: string;
   title: string;
   description: string;
-};
-
-type Props = TDialog & {
-  onClose: () => void;
-  onConfirm: () => void;
+  onClose: (() => void) | undefined;
+  onConfirm: (() => void) | undefined;
 };
 
 const Dialog = ({
@@ -19,7 +16,7 @@ const Dialog = ({
   description,
   onClose,
   onConfirm,
-}: Props) => {
+}: TDialogProps) => {
   return (
     <div className="dialog">
       <div className="dialog-container">
