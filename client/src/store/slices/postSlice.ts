@@ -7,7 +7,7 @@ import api from "../../api";
 import { TPostQuery } from "../../types";
 
 const postsAdapter = createEntityAdapter({
-  selectId: (post: any) => post.slug,
+  selectId: (post: any) => post.postid,
 });
 
 export interface IPostState {
@@ -21,6 +21,11 @@ export interface IPostState {
   loading: boolean | null;
   error: string | undefined | null;
 }
+
+export type TPostUpdate = {
+  postid: string;
+  newValues: object;
+};
 
 const initialState: IPostState = postsAdapter.getInitialState({
   pagination: {
@@ -85,6 +90,27 @@ export const savePost = createAsyncThunk(
   }
 );
 
+export const updatePost = createAsyncThunk(
+  "posts/updatePost",
+  async (values: TPostUpdate) => {
+    const { postid, newValues } = values;
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    try {
+      const response = await api.put(`/posts/${postid}`, newValues, headers);
+      return response.data;
+    } catch (err: any) {
+      console.log("err: ", err);
+      throw new Error(err.response ? err.response.data.msg : err.message);
+    }
+  }
+);
+
 export const deletePost = createAsyncThunk(
   "posts/deletePost",
   async (postId: string) => {
@@ -126,6 +152,17 @@ const postsSlice = createSlice({
         postsAdapter.addOne(state, action.payload);
       })
       .addCase(savePost.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updatePost.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(updatePost.fulfilled, (state: any, action) => {
+        state.loading = false;
+        postsAdapter.upsertOne(state, action.payload.updatedValues);
+      })
+      .addCase(updatePost.rejected, (state: any, action) => {
         state.loading = false;
         state.error = action.error.message;
       })

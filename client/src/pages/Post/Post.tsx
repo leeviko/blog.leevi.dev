@@ -10,7 +10,7 @@ import PostSidebar from "./PostSidebar";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
-import { deletePost } from "../../store/slices/postSlice";
+import { deletePost, updatePost } from "../../store/slices/postSlice";
 import Dialog, { TDialogProps } from "../../components/Dialog";
 
 const Post = () => {
@@ -28,11 +28,19 @@ const Post = () => {
     onConfirm: undefined,
   });
 
+  // TODO: Move these to different component. (PostSidebar)
   const handleEdit = () => {
     navigate("edit");
   };
 
-  const handleUnpublish = () => {};
+  const handleUnpublish = () => {
+    if (post) {
+      dispatch(
+        updatePost({ postid: post.postid, newValues: { status: "draft" } })
+      );
+    }
+    setOpenDialog(false);
+  };
 
   const confirmUnpublish = () => {
     setDialogContent({
