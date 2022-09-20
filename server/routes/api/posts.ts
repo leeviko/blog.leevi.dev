@@ -52,6 +52,7 @@ router.get(
     const params: any = { limit, decodedCursor, userId: "" };
     let sql = `
       SELECT 
+        postid,
         slug, 
         posts.authorid, 
         json_build_object('userId', users.id, 'username', users.username, 'created_at', users.created_at) AS author, 
