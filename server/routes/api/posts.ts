@@ -219,7 +219,7 @@ router.post(
 
     const { title, content, tags, isPrivate, status } = req.body;
     let slug = convertToSlug(title);
-    const postId = nanoid();
+    const postid = nanoid();
     const authorId = req.session.user?.id;
 
     let userRes = await getUserById(authorId);
@@ -232,7 +232,7 @@ router.post(
     }
 
     const newPost = {
-      postId,
+      postid,
       slug,
       authorId,
       title,
@@ -243,11 +243,11 @@ router.post(
     };
 
     const sql = `
-      INSERT INTO posts (postId, slug, authorId, title, content, tags, private, status) 
+      INSERT INTO posts (postid, slug, authorId, title, content, tags, private, status) 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `;
     const params = [
-      postId,
+      postid,
       newPost.slug,
       authorId,
       title,
@@ -273,14 +273,14 @@ router.post(
 );
 
 /**
- * @route  PUT api/posts/:postId
+ * @route  PUT api/posts/:postid
  * @desc   Update a post
  * @access Private
  */
 router.put(
-  "/:postId",
+  "/:postid",
   [
-    param("postId").trim().escape(),
+    param("postid").trim().escape(),
     body("title")
       .optional()
       .trim()
@@ -303,7 +303,7 @@ router.put(
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
-    const postId = req.params.postId;
+    const postid = req.params.postid;
     const { title, content, tags, isPrivate, status } = req.body;
 
     const user = req.session.user;
@@ -320,14 +320,17 @@ router.put(
       tags,
       isPrivate,
       status,
-      postId,
+      postid,
     };
 
+    const updatedValues: any = { postid };
     let updatedColCount = 0;
     if (title && title.length >= 5) {
       params.slug = convertToSlug(title);
       sql += " SET title = :title, slug = :slug";
       updatedColCount++;
+      updatedValues.title = title;
+      updatedValues.slug = params.slug;
     }
     if (content) {
       if (updatedColCount === 0) {
@@ -336,6 +339,7 @@ router.put(
         return;
       }
       sql += ", content = :content";
+      updatedValues.content = content;
       updatedColCount++;
     }
     if (tags) {
@@ -345,6 +349,7 @@ router.put(
         return;
       }
       sql += ", tags = :tags";
+      updatedValues.tags = tags;
       updatedColCount++;
     }
     if (typeof isPrivate !== "undefined") {
@@ -354,6 +359,7 @@ router.put(
         return;
       }
       sql += ", private = :isPrivate";
+      updatedValues.private = isPrivate;
       updatedColCount++;
     }
     if (status) {
@@ -363,6 +369,7 @@ router.put(
         return;
       }
       sql += ", status = :status";
+      updatedValues.status = status;
       updatedColCount++;
     }
 
@@ -370,7 +377,7 @@ router.put(
       return res.status(400).json({ msg: "Nothing to update" });
     }
 
-    sql += " WHERE postid = :postId";
+    sql += " WHERE postid = :postid";
 
     pool.query(named(sql)(params), (err, result) => {
       if (err) {
@@ -379,22 +386,22 @@ router.put(
           .json({ msg: "Updating post failed", err: err.message });
       }
 
-      return res.json({ msg: "Post updated", postId });
+      return res.json({ msg: "Post updated", updatedValues });
     });
   }
 );
 
 /**
- * @route  DELETE api/posts/:postId
+ * @route  DELETE api/posts/:postid
  * @desc   Delete a post
  * @access Private
  */
 router.delete(
-  "/:postId",
-  [param("postId").escape().trim()],
+  "/:postid",
+  [param("postid").escape().trim()],
   auth,
   async (req: Request, res: Response) => {
-    const { postId } = req.params;
+    const { postid } = req.params;
 
     const user = req.session.user;
     let userExists = await getUserById(user?.id);
@@ -403,7 +410,7 @@ router.delete(
     }
 
     let sql = "DELETE FROM posts WHERE postid = $1";
-    const params: any[] = [postId];
+    const params: any[] = [postid];
 
     if (!user?.admin) {
       params.push(user?.id);
@@ -420,7 +427,7 @@ router.delete(
         return res.status(404).json({ msg: "Post not found" });
       }
 
-      return res.json({ msg: "Post deleted", postId });
+      return res.json({ msg: "Post deleted", postid });
     });
   }
 );
