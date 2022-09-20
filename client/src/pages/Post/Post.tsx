@@ -33,6 +33,14 @@ const Post = () => {
     navigate("edit");
   };
 
+  const handlePublish = () => {
+    if (post) {
+      dispatch(
+        updatePost({ postid: post.postid, newValues: { status: "live" } })
+      );
+    }
+  };
+
   const handleUnpublish = () => {
     if (post) {
       dispatch(
@@ -97,12 +105,18 @@ const Post = () => {
                   <button className="btn edit-btn" onClick={handleEdit}>
                     Edit
                   </button>
-                  <button
-                    className="btn unpublish-btn"
-                    onClick={confirmUnpublish}
-                  >
-                    Unpublish
-                  </button>
+                  {post.status === "live" ? (
+                    <button
+                      className="btn unpublish-btn"
+                      onClick={confirmUnpublish}
+                    >
+                      Unpublish
+                    </button>
+                  ) : (
+                    <button className="btn publish-btn" onClick={handlePublish}>
+                      Publish
+                    </button>
+                  )}
                   <button className="btn delete-btn" onClick={confirmDelete}>
                     Delete
                   </button>
