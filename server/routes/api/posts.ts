@@ -335,44 +335,39 @@ router.put(
     if (content) {
       if (updatedColCount === 0) {
         sql += " SET content = :content";
-        updatedColCount++;
-        return;
+      } else {
+        sql += ", content = :content";
       }
-      sql += ", content = :content";
       updatedValues.content = content;
       updatedColCount++;
     }
     if (tags) {
       if (updatedColCount === 0) {
         sql += " SET tags = :tags";
-        updatedColCount++;
-        return;
+      } else {
+        sql += ", tags = :tags";
       }
-      sql += ", tags = :tags";
       updatedValues.tags = tags;
       updatedColCount++;
     }
     if (typeof isPrivate !== "undefined") {
       if (updatedColCount === 0) {
         sql += " SET private = :isPrivate";
-        updatedColCount++;
-        return;
+      } else {
+        sql += ", private = :isPrivate";
       }
-      sql += ", private = :isPrivate";
       updatedValues.private = isPrivate;
       updatedColCount++;
     }
     if (status) {
       if (updatedColCount === 0) {
         sql += " SET status = :status";
-        updatedColCount++;
-        return;
+      } else {
+        sql += ", status = :status";
       }
-      sql += ", status = :status";
       updatedValues.status = status;
       updatedColCount++;
     }
-
     if (updatedColCount === 0) {
       return res.status(400).json({ msg: "Nothing to update" });
     }
