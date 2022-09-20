@@ -277,6 +277,7 @@ router.post(
  * @desc   Update a post
  * @access Private
  */
+// TODO: If changed from live to draft, change slug
 router.put(
   "/:postid",
   [
