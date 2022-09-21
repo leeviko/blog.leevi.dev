@@ -101,21 +101,24 @@ const Post = () => {
                   <button className="btn edit-btn" onClick={handleEdit}>
                     Edit
                   </button>
-                  {post.status === "live" ? (
-                    <button
-                      className="btn unpublish-btn"
-                      onClick={confirmUnpublish}
-                    >
-                      Unpublish
-                    </button>
-                  ) : (
+                  {post.status === "draft" && (
                     <button className="btn publish-btn" onClick={handlePublish}>
                       Publish
                     </button>
                   )}
-                  <button className="btn delete-btn" onClick={confirmDelete}>
-                    Delete
-                  </button>
+                  <div className="btn-section">
+                    {post.status === "live" && (
+                      <button
+                        className="btn unpublish-btn"
+                        onClick={confirmUnpublish}
+                      >
+                        Unpublish
+                      </button>
+                    )}
+                    <button className="btn delete-btn" onClick={confirmDelete}>
+                      Delete
+                    </button>
+                  </div>
                 </PostSidebar>
               </>
             )}

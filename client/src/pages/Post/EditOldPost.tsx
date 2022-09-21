@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import Dialog, { TDialogProps } from "../../components/Dialog";
 import useForm from "../../hooks/useForm";
 import useGetPost from "../../hooks/useGetPost";
-import { updatePost } from "../../store/slices/postSlice";
+import { deletePost, updatePost } from "../../store/slices/postSlice";
 import { AppDispatch } from "../../store/store";
 import { TPostResult } from "../../types";
 import Editor from "./PostEditor";
@@ -84,6 +84,23 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
     if (post) dispatch(updatePost({ post, newValues }));
   };
 
+  const handleDelete = () => {
+    if (post) {
+      dispatch(deletePost(post.postid));
+    }
+    setOpenDialog(false);
+  };
+
+  const confirmDelete = () => {
+    setDialogContent({
+      title: "Delete post",
+      description: "Are you sure you want to delete this post?",
+      onClose: handleClose,
+      onConfirm: handleDelete,
+    });
+    setOpenDialog(true);
+  };
+
   return (
     <div className="edit-post">
       {errors && <Navigate to="/" replace={true} />}
@@ -145,12 +162,17 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
                 Update
               </button>
               {post.status === "live" ? (
-                <button
-                  className="btn unpublish-btn"
-                  onClick={confirmUnpublish}
-                >
-                  Unpublish
-                </button>
+                <div className="btn-section">
+                  <button
+                    className="btn unpublish-btn"
+                    onClick={confirmUnpublish}
+                  >
+                    Unpublish
+                  </button>
+                  <button className="btn delete-btn" onClick={confirmDelete}>
+                    Delete
+                  </button>
+                </div>
               ) : (
                 <button className="btn publish-btn" onClick={handlePublish}>
                   Publish
