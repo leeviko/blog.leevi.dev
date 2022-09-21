@@ -7,7 +7,7 @@ import { gruvboxDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const PostMarkdown = ({ postContent }: { postContent: string }) => {
   return (
-    <div className="post-content">
+    <div className="post-body">
       <ReactMarkdown
         children={postContent}
         remarkPlugins={[remarkGfm, remarkEmoji]}
