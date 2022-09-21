@@ -15,9 +15,9 @@ import Dialog, { TDialogProps } from "../../components/Dialog";
 
 const Post = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { postId } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const post: TPostResult | null = useGetPost(postId);
+  const { post }: { post: TPostResult | null; errors: any } = useGetPost(slug);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuth);
   const user = useSelector((state: RootState) => state.auth.user);
   const [openDialog, setOpenDialog] = useState(false);
@@ -35,17 +35,13 @@ const Post = () => {
 
   const handlePublish = () => {
     if (post) {
-      dispatch(
-        updatePost({ postid: post.postid, newValues: { status: "live" } })
-      );
+      dispatch(updatePost({ post, newValues: { status: "live" } }));
     }
   };
 
   const handleUnpublish = () => {
     if (post) {
-      dispatch(
-        updatePost({ postid: post.postid, newValues: { status: "draft" } })
-      );
+      dispatch(updatePost({ post, newValues: { status: "draft" } }));
     }
     setOpenDialog(false);
   };

@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/store";
-import { savePost } from "../../store/slices/postSlice";
-import withAuth from "../../components/WithAuth";
 import useForm from "../../hooks/useForm";
+import { savePost } from "../../store/slices/postSlice";
+import { AppDispatch } from "../../store/store";
 import Editor from "./PostEditor";
 import Preview from "./PostPreview";
 import PostSidebar from "./PostSidebar";
 
 type Props = {};
 
-const NewPost = (props: Props) => {
+const EditNewPost = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTag, setActiveTag] = useState("");
   const [tags, setTags] = useState<Array<string>>([]);
@@ -36,11 +35,11 @@ const NewPost = (props: Props) => {
   };
 
   return (
-    <div className="new-post">
-      <div className="new-post-container">
-        <div className="new-post-top">
+    <div className="edit-post">
+      <div className="edit-post-container">
+        <div className="edit-post-top">
           <h1 className="section-title">new post - {mode}</h1>
-          <div className="new-post-buttons">
+          <div className="edit-post-buttons">
             <button
               onClick={() => setMode("edit")}
               className={`btn change-mode-btn ${
@@ -59,7 +58,7 @@ const NewPost = (props: Props) => {
             </button>
           </div>
         </div>
-        <div className="new-post-wrapper">
+        <div className="edit-post-wrapper">
           {mode === "edit" ? (
             <Editor
               values={values}
@@ -97,4 +96,4 @@ const NewPost = (props: Props) => {
   );
 };
 
-export default withAuth(NewPost);
+export default EditNewPost;

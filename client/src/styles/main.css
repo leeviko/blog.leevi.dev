@@ -160,6 +160,7 @@ h5 {
 
 /* CONFIRM DIALOG */
 .dialog {
+  z-index: 9999;
   position: absolute;
   background-color: white;
   padding: 1rem;
@@ -283,17 +284,17 @@ h5 {
 
 /* END OF POST */
 
-/* NEW POST PAGE */
-.new-post {
+/* EDIT POST PAGE */
+.edit-post {
   display: flex;
   justify-content: center;
 }
 
-.new-post-container {
+.edit-post-container {
   width: 800px;
 }
 
-.new-post-wrapper,
+.edit-post-wrapper,
 .post-wrapper {
   display: flex;
 }
@@ -307,15 +308,15 @@ h5 {
   width: 100%;
 }
 
-.new-post-top {
+.edit-post-top {
   display: flex;
 }
 
-.new-post-top h1 {
+.edit-post-top h1 {
   margin-right: 1rem;
 }
 
-.new-post .change-mode-btn {
+.edit-post .change-mode-btn {
   transition: 0.15s;
   margin-top: 0.25rem;
   border: none;
