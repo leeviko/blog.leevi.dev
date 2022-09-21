@@ -81,7 +81,7 @@ router.get(
         sql += " AND status = 'live'";
       }
     } else {
-      sql += " AND private = false";
+      sql += " AND private = false AND status = 'live'";
     }
 
     sql += " ORDER BY posts.created_at DESC LIMIT :limit";
