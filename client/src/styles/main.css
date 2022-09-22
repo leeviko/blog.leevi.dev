@@ -254,10 +254,16 @@ h5 {
 
 .post-tags {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .post .post-tags {
   margin-bottom: 1rem;
+}
+
+.post .post-tag,
+.editor .post-tag {
+  margin: 0.25rem 0.5rem 0rem 0rem;
 }
 
 .post-tag {
