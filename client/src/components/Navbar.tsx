@@ -28,14 +28,16 @@ const Navbar = () => {
           <div
             className={`nav-item ${location === "/" ? "active" : "inactive"}`}
           >
-            <Link to="/">home</Link>
+            <Link to="/">Home</Link>
+            <span className="line"></span>
           </div>
           <div
             className={`nav-item ${
               location === "/archive" ? "active" : "inactive"
             }`}
           >
-            <Link to="/archive">archive</Link>
+            <Link to="/archive">Archive</Link>
+            <span className="line"></span>
           </div>
           {isAuthenticated && (
             <>
@@ -44,7 +46,8 @@ const Navbar = () => {
                   location.startsWith("/profile") ? "active" : "inactive"
                 }`}
               >
-                <Link to="/profile">profile</Link>
+                <Link to="/profile">Profile</Link>
+                <span className="line"></span>
               </div>
               <div className="nav-item">
                 <Link to="/new-post">
