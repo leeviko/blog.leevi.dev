@@ -5,14 +5,6 @@ type Props = {
   postType: "small" | "full";
 };
 
-const hexToRgbA = (hex: any, alpha = 1) => {
-  if (!hex) {
-    return "unset";
-  }
-  const [r, g, b] = hex.match(/\w\w/g).map((x: any) => parseInt(x, 16));
-  return `rgba(${r},${g},${b},${alpha})`;
-};
-
 const Tag = ({ name, postType }: Props) => {
   const [color, setColor] = useState("");
 
@@ -56,12 +48,15 @@ const Tag = ({ name, postType }: Props) => {
         setColor("#658845");
         break;
       case "Reading":
+      case "ASOIAF":
         setColor("#689d6a");
         break;
       case "Gaming":
+      case "Game-of-Thrones":
         setColor("#98971a");
         break;
       case "Review":
+      case "Book-Review":
         setColor("#888745");
         break;
       case "Life":
@@ -94,14 +89,23 @@ const Tag = ({ name, postType }: Props) => {
       style={
         postType === "full"
           ? {
-              backgroundColor: hexToRgbA(color, 0.5),
+              backgroundColor: color,
               border: `1px solid ${color}`,
+              color: "var(--white)",
             }
-          : { backgroundColor: "unset" }
+          : { backgroundColor: "unset", color: "black" }
       }
       className="post-tag"
     >
-      <span style={{ color }}>#</span>
+      <span
+        style={
+          postType === "full"
+            ? { color: "rgba(255, 255, 255, 0.5)" }
+            : { color }
+        }
+      >
+        #
+      </span>
       {name}
     </li>
   );

@@ -188,7 +188,6 @@ const postsSlice = createSlice({
       })
       .addCase(updatePost.fulfilled, (state: any, action) => {
         state.loading = false;
-        postsAdapter.upsertOne(state, action.payload.updatedValues);
       })
       .addCase(updatePost.rejected, (state: any, action) => {
         state.loading = false;

@@ -29,6 +29,7 @@ const Navbar = () => {
             className={`nav-item ${location === "/" ? "active" : "inactive"}`}
           >
             <Link to="/">home</Link>
+            <span className="line"></span>
           </div>
           <div
             className={`nav-item ${
@@ -36,6 +37,7 @@ const Navbar = () => {
             }`}
           >
             <Link to="/archive">archive</Link>
+            <span className="line"></span>
           </div>
           {isAuthenticated && (
             <>
@@ -45,6 +47,7 @@ const Navbar = () => {
                 }`}
               >
                 <Link to="/profile">profile</Link>
+                <span className="line"></span>
               </div>
               <div className="nav-item">
                 <Link to="/new-post">

@@ -1,6 +1,6 @@
 :root {
   --black: #282828;
-  --white: #fbf1c7;
+  --white: #f4fdff;
   --gray: #748d92;
   --gray-hover: #596d71;
   --gray-hover-opa: rgb(89, 109, 113, 0.5);
@@ -150,12 +150,31 @@ h5 {
 }
 
 .nav-item {
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
   margin: 0 0.5rem;
 }
 
-.nav-item.active {
-  text-decoration: underline;
+.nav-item a:hover {
+  text-decoration: none;
 }
+
+.nav-item .line {
+  transition: 0.15s;
+  height: 2px;
+  background-color: var(--blue-dark);
+}
+
+.nav-item.inactive .line {
+  width: 0;
+}
+
+.nav-item.active .line,
+.nav-item:hover .line {
+  width: 100%;
+}
+
 /* END OF NAVBAR */
 
 /* CONFIRM DIALOG */
@@ -188,7 +207,6 @@ h5 {
 .dialog .btn:first-child {
   margin-right: 0.25rem;
 }
-
 /* END OF CONFIRM DIALOG */
 
 /* POST LIST */
@@ -265,6 +283,11 @@ h5 {
   color: var(--black);
   text-decoration: none;
 }
+
+.post-small .post-title a:hover {
+  color: black;
+}
+
 /* END OF SMALL POST */
 
 /* POST */
