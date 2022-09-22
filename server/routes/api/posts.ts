@@ -277,7 +277,6 @@ router.post(
  * @desc   Update a post
  * @access Private
  */
-// TODO: If changed from live to draft, change slug
 router.put(
   "/:postid",
   [
@@ -307,11 +306,21 @@ router.put(
     const postid = req.params.postid;
     const { title, content, tags, isPrivate, status } = req.body;
 
-    const user = req.session.user;
-    let userExists = await getUserById(user?.id);
-    if (!userExists.ok || !userExists.result) {
+    let user = req.session.user;
+    let userRes = await getUserById(user?.id);
+    if (!userRes.ok || !userRes.result) {
       return res.status(400).json({ msg: "Something went wrong" });
     }
+    user = userRes.result;
+
+    const postRes = await pool.query(
+      "SELECT postid, title, status FROM posts WHERE postid = $1 LIMIT 1",
+      [postid]
+    );
+    if (postRes.rowCount === 0) {
+      return res.status(400).json({ msg: "Post doesnt exist" });
+    }
+    const post = postRes.rows[0];
 
     let sql = "UPDATE posts";
     let params: any = {
@@ -322,58 +331,74 @@ router.put(
       isPrivate,
       status,
       postid,
+      userid: user.id,
     };
 
-    const updatedValues: any = { postid };
-    let updatedColCount = 0;
-    if (title && title.length >= 5) {
+    const updatedValues: any = {};
+    if (title) {
       params.slug = convertToSlug(title);
+      if (
+        (post.status === "live" && status === "draft") ||
+        (post.status === "draft" && !status)
+      ) {
+        params.slug += `--draft-${new Date().getTime()}`;
+      }
       sql += " SET title = :title, slug = :slug";
-      updatedColCount++;
       updatedValues.title = title;
       updatedValues.slug = params.slug;
+    } else {
+      if (post.status === "live" && status === "draft") {
+        params.slug = `${convertToSlug(
+          post.title
+        )}--draft-${new Date().getTime()}`;
+        sql += " SET slug = :slug";
+        updatedValues.slug = params.slug;
+      } else if (post.status === "draft" && status === "live") {
+        params.slug = convertToSlug(post.title);
+        sql += " SET slug = :slug";
+        updatedValues.slug = params.slug;
+      }
     }
     if (content) {
-      if (updatedColCount === 0) {
+      if (Object.keys(updatedValues).length === 0) {
         sql += " SET content = :content";
       } else {
         sql += ", content = :content";
       }
       updatedValues.content = content;
-      updatedColCount++;
     }
     if (tags) {
-      if (updatedColCount === 0) {
+      if (Object.keys(updatedValues).length === 0) {
         sql += " SET tags = :tags";
       } else {
         sql += ", tags = :tags";
       }
       updatedValues.tags = tags;
-      updatedColCount++;
     }
     if (typeof isPrivate !== "undefined") {
-      if (updatedColCount === 0) {
+      if (Object.keys(updatedValues).length === 0) {
         sql += " SET private = :isPrivate";
       } else {
         sql += ", private = :isPrivate";
       }
       updatedValues.private = isPrivate;
-      updatedColCount++;
     }
     if (status) {
-      if (updatedColCount === 0) {
+      if (Object.keys(updatedValues).length === 0) {
         sql += " SET status = :status";
       } else {
         sql += ", status = :status";
       }
       updatedValues.status = status;
-      updatedColCount++;
     }
-    if (updatedColCount === 0) {
+    if (Object.keys(updatedValues).length === 0) {
       return res.status(400).json({ msg: "Nothing to update" });
     }
 
     sql += " WHERE postid = :postid";
+    if (!user.admin) {
+      sql += " AND authorid = :userid";
+    }
 
     pool.query(named(sql)(params), (err, result) => {
       if (err) {
@@ -382,7 +407,10 @@ router.put(
           .json({ msg: "Updating post failed", err: err.message });
       }
 
-      return res.json({ msg: "Post updated", updatedValues });
+      return res.json({
+        msg: "Post updated",
+        updatedValues: { ...updatedValues, postid },
+      });
     });
   }
 );
