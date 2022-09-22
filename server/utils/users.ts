@@ -1,11 +1,14 @@
 import pool from "../config/db";
+import { TUserResult } from "../routes/api/users";
 
 export type TQueryResult = {
   ok: boolean;
-  result: null;
+  result: TUserResult | null;
 };
 
-export const getUserById = async (userId: string | undefined) => {
+export const getUserById = async (
+  userId: string | undefined
+): Promise<TQueryResult> => {
   const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
   const user = await pool.query(sql, [userId]);
 

@@ -4,7 +4,8 @@ import api from "../api";
 import { TPostResult } from "../types";
 
 const useGetPost = (postId: string | undefined) => {
-  const [postData, setPostData] = useState<TPostResult | null>(null);
+  const [post, setPost] = useState<TPostResult | null>(null);
+  const [errors, setErrors] = useState<any>(null);
 
   const getPost = () => {
     const headers = {
@@ -17,10 +18,10 @@ const useGetPost = (postId: string | undefined) => {
     api
       .get(`/posts/${postId}`, headers)
       .then((res) => {
-        setPostData(res.data.result[0]);
+        setPost(res.data.result[0]);
       })
       .catch((err) => {
-        console.log(err);
+        setErrors(err);
       });
   };
 
@@ -29,7 +30,7 @@ const useGetPost = (postId: string | undefined) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return postData;
+  return { post, errors };
 };
 
 export default useGetPost;

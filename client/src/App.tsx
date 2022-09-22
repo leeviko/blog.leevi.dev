@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 import Archive from "./pages/Archive/Archive";
 import Post from "./pages/Post/Post";
 import Login from "./pages/Login/Login";
-import NewPost from "./pages/Post/NewPost";
+import EditPost from "./pages/Post/EditPost";
 import Profile from "./pages/Profile/Profile";
 import ProfilePosts from "./pages/Profile/ProfilePosts";
 import ProfileSettings from "./pages/Profile/ProfileSettings";
@@ -27,9 +27,12 @@ function App() {
           <Route path="posts" element={<ProfilePosts />} />
           <Route path="settings" element={<ProfileSettings />} />
         </Route>
-        <Route path="/new-post" element={<NewPost />} />
+        <Route path="/new-post" element={<EditPost />} />
         <Route path="/posts">
-          <Route path=":postId" element={<Post />} />
+          <Route path=":slug">
+            <Route path="" element={<Post />} />
+            <Route path="edit" element={<EditPost />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

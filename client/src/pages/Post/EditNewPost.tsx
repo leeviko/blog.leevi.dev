@@ -1,22 +1,21 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../store/store";
-import { savePost } from "../../store/slices/postSlice";
-import withAuth from "../../components/WithAuth";
 import useForm from "../../hooks/useForm";
+import { savePost } from "../../store/slices/postSlice";
+import { AppDispatch } from "../../store/store";
 import Editor from "./PostEditor";
 import Preview from "./PostPreview";
+import PostSidebar from "./PostSidebar";
 
 type Props = {};
 
-const NewPost = (props: Props) => {
+const EditNewPost = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTag, setActiveTag] = useState("");
   const [tags, setTags] = useState<Array<string>>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [values, handleChange] = useForm({
     title: "",
-    tags: [],
     content: "",
   });
   const [mode, setMode] = useState<"edit" | "preview">("edit");
@@ -32,15 +31,15 @@ const NewPost = (props: Props) => {
 
   const handleSave = (e: any) => {
     const status = e.target.name;
-    dispatch(savePost({ ...values, status, isPrivate }));
+    dispatch(savePost({ ...values, tags, status, isPrivate }));
   };
 
   return (
-    <div className="new-post">
-      <div className="new-post-container">
-        <div className="new-post-top">
+    <div className="edit-post">
+      <div className="edit-post-container">
+        <div className="edit-post-top">
           <h1 className="section-title">new post - {mode}</h1>
-          <div className="new-post-buttons">
+          <div className="edit-post-buttons">
             <button
               onClick={() => setMode("edit")}
               className={`btn change-mode-btn ${
@@ -59,7 +58,7 @@ const NewPost = (props: Props) => {
             </button>
           </div>
         </div>
-        <div className="new-post-wrapper">
+        <div className="edit-post-wrapper">
           {mode === "edit" ? (
             <Editor
               values={values}
@@ -72,37 +71,29 @@ const NewPost = (props: Props) => {
           ) : (
             <Preview post={values} tags={tags} />
           )}
-          <div className="new-post-sidebar">
-            <div className="sidebar-actions">
-              <button
-                onClick={() => setIsPrivate(!isPrivate)}
-                className="checkbox"
-              >
-                <div
-                  className={`tick ${isPrivate ? "checked" : "unchecked"}`}
-                />
-                <span>Private</span>
-              </button>
-              <button
-                name="live"
-                className="btn publish-btn"
-                onClick={handleSave}
-              >
-                Publish
-              </button>
-              <button
-                name="draft"
-                className="btn draft-btn"
-                onClick={handleSave}
-              >
-                Save draft
-              </button>
-            </div>
-          </div>
+          <PostSidebar>
+            <button
+              onClick={() => setIsPrivate(!isPrivate)}
+              className="checkbox"
+            >
+              <div className={`tick ${isPrivate ? "checked" : "unchecked"}`} />
+              <span>Private</span>
+            </button>
+            <button
+              name="live"
+              className="btn publish-btn"
+              onClick={handleSave}
+            >
+              Publish
+            </button>
+            <button name="draft" className="btn draft-btn" onClick={handleSave}>
+              Save draft
+            </button>
+          </PostSidebar>
         </div>
       </div>
     </div>
   );
 };
 
-export default withAuth(NewPost);
+export default EditNewPost;

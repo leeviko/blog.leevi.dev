@@ -4,10 +4,10 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import api from "../../api";
-import { TPostQuery } from "../../types";
+import { TPostQuery, TPostResult } from "../../types";
 
 const postsAdapter = createEntityAdapter({
-  selectId: (post: any) => post.slug,
+  selectId: (post: any) => post.postid,
 });
 
 export interface IPostState {
@@ -21,6 +21,11 @@ export interface IPostState {
   loading: boolean | null;
   error: string | undefined | null;
 }
+
+export type TPostUpdate = {
+  post: TPostResult;
+  newValues: any;
+};
 
 const initialState: IPostState = postsAdapter.getInitialState({
   pagination: {
@@ -85,11 +90,65 @@ export const savePost = createAsyncThunk(
   }
 );
 
-export const deletePost = createAsyncThunk("posts/deletePost", async (id) => {
-  const response = await api.delete(`/posts/${id}`);
+export const updatePost = createAsyncThunk(
+  "posts/updatePost",
+  async (values: TPostUpdate) => {
+    const { post } = values;
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+    const newValues = values.newValues;
 
-  return response.data;
-});
+    if (!newValues.title || post.title === newValues.title) {
+      delete newValues.title;
+    }
+    if (!newValues.content || post.content === newValues.content) {
+      delete newValues.content;
+    }
+    if (
+      !newValues.tags ||
+      JSON.stringify(post.tags) === JSON.stringify(newValues.tags)
+    ) {
+      delete newValues.tags;
+    }
+    if (
+      newValues.isPrivate === "undefined" ||
+      post.private === newValues.isPrivate
+    ) {
+      delete newValues.isPrivate;
+    }
+
+    if (Object.keys(newValues).length === 0) {
+      throw new Error("Nothing to update");
+    }
+
+    try {
+      const response = await api.put(
+        `/posts/${post.postid}`,
+        newValues,
+        headers
+      );
+      return response.data;
+    } catch (err: any) {
+      console.log("err: ", err);
+      throw new Error(err.response ? err.response.data.msg : err.message);
+    }
+  }
+);
+
+export const deletePost = createAsyncThunk(
+  "posts/deletePost",
+  async (postId: string) => {
+    const response = await api.delete(`/posts/${postId}`, {
+      withCredentials: true,
+    });
+
+    return response.data;
+  }
+);
 
 const postsSlice = createSlice({
   name: "posts",
@@ -117,31 +176,39 @@ const postsSlice = createSlice({
         state.loading = true;
       })
       .addCase(savePost.fulfilled, (state: any, action) => {
-        console.log(action.payload);
+        state.loading = false;
         postsAdapter.addOne(state, action.payload);
       })
       .addCase(savePost.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.error.message;
       })
-
+      .addCase(updatePost.pending, (state, action) => {
+        state.loading = true;
+      })
+      .addCase(updatePost.fulfilled, (state: any, action) => {
+        state.loading = false;
+        postsAdapter.upsertOne(state, action.payload.updatedValues);
+      })
+      .addCase(updatePost.rejected, (state: any, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(deletePost.pending, (state, action) => {
+        state.loading = true;
+      })
       .addCase(deletePost.fulfilled, (state: any, action) => {
-        if (!action.payload?.id) {
-          console.log("Delete could not complete");
-          console.log(action.payload);
-          return;
-        }
+        state.loading = false;
         const { id } = action.payload;
         postsAdapter.removeOne(state, id);
       });
   },
 });
 
-//getSelectors creates these selectors and we rename them with aliases using destructuring
 export const {
   selectAll: selectAllPosts,
   selectById: selectPostById,
   selectIds: selectPostIds,
-  // Pass in a selector that returns the posts slice of state
 } = postsAdapter.getSelectors((state: any) => state.posts);
 
 export const getPostsLoading = (state: any) => state.posts.loading;

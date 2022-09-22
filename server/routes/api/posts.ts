@@ -7,6 +7,7 @@ import { pg as named } from "yesql";
 import { auth } from "../../middleware/auth";
 import { convertToSlug } from "../../utils/convertToSlug";
 import { getUserById } from "../../utils/users";
+import { TUserResult } from "./users";
 
 const router = express.Router();
 const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
@@ -51,6 +52,7 @@ router.get(
     const params: any = { limit, decodedCursor, userId: "" };
     let sql = `
       SELECT 
+        postid,
         slug, 
         posts.authorid, 
         json_build_object('userId', users.id, 'username', users.username, 'created_at', users.created_at) AS author, 
@@ -79,7 +81,7 @@ router.get(
         sql += " AND status = 'live'";
       }
     } else {
-      sql += " AND private = false";
+      sql += " AND private = false AND status = 'live'";
     }
 
     sql += " ORDER BY posts.created_at DESC LIMIT :limit";
@@ -147,6 +149,7 @@ router.get(
     }
     let sql = `
       SELECT 
+        postid,
         slug, 
         posts.authorid, 
         json_build_object('userId', users.id, 'username', users.username, 'created_at', users.created_at) AS author, 
@@ -202,7 +205,7 @@ router.post(
       .escape()
       .isLength({ min: 5 })
       .withMessage("Title cannot less than 5 characters long"),
-    body("content").trim().escape(),
+    body("content").trim(),
     body("tags").isArray({ max: 10 }),
     body("isPrivate").isBoolean().trim().escape(),
     body("status").trim().escape().isIn(["live", "draft"]).default("draft"),
@@ -215,11 +218,21 @@ router.post(
     }
 
     const { title, content, tags, isPrivate, status } = req.body;
-    const slug = convertToSlug(title);
-    const postId = nanoid();
+    let slug = convertToSlug(title);
+    const postid = nanoid();
     const authorId = req.session.user?.id;
+
+    let userRes = await getUserById(authorId);
+    if (!userRes.ok || !userRes.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
+    }
+
+    if (status === "draft") {
+      slug += `--draft-${new Date().getTime()}`;
+    }
+
     const newPost = {
-      postId,
+      postid,
       slug,
       authorId,
       title,
@@ -229,23 +242,13 @@ router.post(
       status,
     };
 
-    let user = await getUserById(authorId);
-    if (!user.ok || !user.result) {
-      return res.status(400).json({ msg: "Something went wrong" });
-    }
-    user = user.result;
-
-    if (status === "draft") {
-      newPost.slug += `--draft-${new Date()}`;
-    }
-
     const sql = `
-      INSERT INTO posts (postId, slug, authorId, title, content, tags, private, status) 
+      INSERT INTO posts (postid, slug, authorId, title, content, tags, private, status) 
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `;
     const params = [
-      postId,
-      slug,
+      postid,
+      newPost.slug,
       authorId,
       title,
       content,
@@ -270,44 +273,157 @@ router.post(
 );
 
 /**
- * @route  DELETE api/posts/:slug
+ * @route  PUT api/posts/:postid
+ * @desc   Update a post
+ * @access Private
+ */
+// TODO: If changed from live to draft, change slug
+router.put(
+  "/:postid",
+  [
+    param("postid").trim().escape(),
+    body("title")
+      .optional()
+      .trim()
+      .escape()
+      .isLength({ min: 5 })
+      .withMessage("Title cannot less than 5 characters long"),
+    body("content").optional().trim(),
+    body("tags").optional().isArray({ max: 10 }),
+    body("isPrivate").optional().isBoolean().trim().escape(),
+    body("status")
+      .optional()
+      .trim()
+      .escape()
+      .isIn(["live", "draft"])
+      .default("draft"),
+  ],
+  auth,
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+    const postid = req.params.postid;
+    const { title, content, tags, isPrivate, status } = req.body;
+
+    const user = req.session.user;
+    let userExists = await getUserById(user?.id);
+    if (!userExists.ok || !userExists.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
+    }
+
+    let sql = "UPDATE posts";
+    let params: any = {
+      title,
+      slug: "",
+      content,
+      tags,
+      isPrivate,
+      status,
+      postid,
+    };
+
+    const updatedValues: any = { postid };
+    let updatedColCount = 0;
+    if (title && title.length >= 5) {
+      params.slug = convertToSlug(title);
+      sql += " SET title = :title, slug = :slug";
+      updatedColCount++;
+      updatedValues.title = title;
+      updatedValues.slug = params.slug;
+    }
+    if (content) {
+      if (updatedColCount === 0) {
+        sql += " SET content = :content";
+      } else {
+        sql += ", content = :content";
+      }
+      updatedValues.content = content;
+      updatedColCount++;
+    }
+    if (tags) {
+      if (updatedColCount === 0) {
+        sql += " SET tags = :tags";
+      } else {
+        sql += ", tags = :tags";
+      }
+      updatedValues.tags = tags;
+      updatedColCount++;
+    }
+    if (typeof isPrivate !== "undefined") {
+      if (updatedColCount === 0) {
+        sql += " SET private = :isPrivate";
+      } else {
+        sql += ", private = :isPrivate";
+      }
+      updatedValues.private = isPrivate;
+      updatedColCount++;
+    }
+    if (status) {
+      if (updatedColCount === 0) {
+        sql += " SET status = :status";
+      } else {
+        sql += ", status = :status";
+      }
+      updatedValues.status = status;
+      updatedColCount++;
+    }
+    if (updatedColCount === 0) {
+      return res.status(400).json({ msg: "Nothing to update" });
+    }
+
+    sql += " WHERE postid = :postid";
+
+    pool.query(named(sql)(params), (err, result) => {
+      if (err) {
+        return res
+          .status(400)
+          .json({ msg: "Updating post failed", err: err.message });
+      }
+
+      return res.json({ msg: "Post updated", updatedValues });
+    });
+  }
+);
+
+/**
+ * @route  DELETE api/posts/:postid
  * @desc   Delete a post
  * @access Private
  */
 router.delete(
-  "/:slug",
-  [param("slug").escape().trim()],
+  "/:postid",
+  [param("postid").escape().trim()],
   auth,
   async (req: Request, res: Response) => {
-    const { slug } = req.params;
-    const userId = req.session.user?.id;
+    const { postid } = req.params;
 
-    // Check if user exists
-    const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
-    const author = await pool.query(sql, [userId]);
-
-    if (author.rowCount === 0) {
-      return res.status(400).json({ msg: "User doesnt exist" });
+    const user = req.session.user;
+    let userExists = await getUserById(user?.id);
+    if (!userExists.ok || !userExists.result) {
+      return res.status(400).json({ msg: "Something went wrong" });
     }
 
-    const query = {
-      name: "delete-post",
-      text: "DELETE FROM posts WHERE slug = $1 AND authorId = $2",
-      values: [slug, userId],
-    };
+    let sql = "DELETE FROM posts WHERE postid = $1";
+    const params: any[] = [postid];
 
-    pool.query(query, (err, result) => {
+    if (!user?.admin) {
+      params.push(user?.id);
+      sql += " AND authorId = $2";
+    }
+
+    pool.query(sql, params, (err, result) => {
       if (err) {
         return res
           .status(400)
           .json({ msg: "Couldnt delete post", err: err.message });
       }
-
       if (result.rowCount === 0) {
         return res.status(404).json({ msg: "Post not found" });
       }
 
-      return res.json({ msg: "Post deleted", slug });
+      return res.json({ msg: "Post deleted", postid });
     });
   }
 );

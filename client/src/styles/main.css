@@ -6,6 +6,9 @@
   --gray-hover-opa: rgb(89, 109, 113, 0.5);
   --aqua: #427b58;
   --red: #9d0006;
+  --red-light: #a51b20;
+  --red-muted: #ba3631;
+  --red-muted-hover: #902a26;
   --green: #07781f;
   --green-hover: #065717;
   --blue: #076678;
@@ -155,6 +158,39 @@ h5 {
 }
 /* END OF NAVBAR */
 
+/* CONFIRM DIALOG */
+.dialog {
+  z-index: 9999;
+  position: absolute;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.5);
+}
+
+.dialog-actions {
+  margin: 0.2rem 0 0 0;
+}
+
+.dialog .btn {
+  transition: 0.15s;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  border-radius: 0.2rem;
+  padding: 0 0.5rem;
+  color: var(--white);
+}
+
+.dialog .btn:first-child {
+  margin-right: 0.25rem;
+}
+
+/* END OF CONFIRM DIALOG */
+
 /* POST LIST */
 .post-list {
   max-width: 550px;
@@ -162,18 +198,34 @@ h5 {
 /* END OF POST LIST */
 
 /* SMALL POST */
-.p-author {
+.post-author {
   font-size: 0.9rem;
 }
 
-.p-author .author-name {
+.post-author .post-author-name {
   color: var(--black);
   margin-right: 0.25rem;
   font-weight: bold;
 }
 
-.p-author .date {
+.post-author .post-date {
   opacity: 0.75;
+}
+
+.post-flag {
+  border-radius: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--white);
+  margin-left: 0.5rem;
+  padding: 0 0.25rem;
+}
+
+.post-flag.private {
+  background-color: var(--red-light);
+}
+
+.post-flag.draft {
+  background-color: var(--t-yellow);
 }
 
 .post-small,
@@ -204,12 +256,12 @@ h5 {
   margin-right: 0.15rem;
 }
 
-.p-title {
+.post-small .post-title {
   font-size: 1.2rem;
 }
 
-.p-title,
-.p-title a {
+.post-small .post-title,
+.post-small .post-title a {
   color: var(--black);
   text-decoration: none;
 }
@@ -222,27 +274,28 @@ h5 {
   margin: 0 0 2rem 0;
 }
 
-.post {
+.post-content {
   width: 600px;
 }
 
-.post .p-title {
+.post .post-title {
   font-size: 2rem;
 }
 
 /* END OF POST */
 
-/* NEW POST PAGE */
-.new-post {
+/* EDIT POST PAGE */
+.edit-post {
   display: flex;
   justify-content: center;
 }
 
-.new-post-container {
+.edit-post-container {
   width: 800px;
 }
 
-.new-post-wrapper {
+.edit-post-wrapper,
+.post-wrapper {
   display: flex;
 }
 
@@ -255,15 +308,15 @@ h5 {
   width: 100%;
 }
 
-.new-post-top {
+.edit-post-top {
   display: flex;
 }
 
-.new-post-top h1 {
+.edit-post-top h1 {
   margin-right: 1rem;
 }
 
-.new-post .change-mode-btn {
+.edit-post .change-mode-btn {
   transition: 0.15s;
   margin-top: 0.25rem;
   border: none;
@@ -341,17 +394,23 @@ h5 {
   padding: 0.5rem;
 }
 
-.new-post .sidebar-actions {
+.post-sidebar-actions {
   margin: 0.5rem;
   display: flex;
   flex-direction: column;
 }
 
-.new-post-sidebar button {
+.post-sidebar .btn-section {
+  margin: 1rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-sidebar button {
   margin-bottom: 0.25rem;
 }
 
-.new-post .checkbox {
+.post-sidebar .checkbox {
   display: flex;
   align-items: center;
   border: none;
@@ -359,22 +418,22 @@ h5 {
   font-family: inherit;
 }
 
-.new-post .checkbox .tick {
+.post-sidebar .checkbox .tick {
   margin-right: 0.25rem;
   border-radius: 0.2rem;
   width: 20px;
   height: 20px;
 }
 
-.new-post .checkbox .tick.checked {
+.post-sidebar .checkbox .tick.checked {
   background-color: var(--t-blue);
 }
-.new-post .checkbox .tick.unchecked {
+.post-sidebar .checkbox .tick.unchecked {
   border: 1px solid var(--black);
   background: none;
 }
 
-.new-post-sidebar .btn {
+.post-sidebar .btn {
   width: 80px;
   transition: 0.15s;
   border: none;
@@ -385,19 +444,36 @@ h5 {
   cursor: pointer;
 }
 
-.new-post .publish-btn {
+.publish-btn {
   background-color: var(--green);
 }
 
-.new-post .publish-btn:hover {
+.draft-btn {
+  background-color: var(--gray);
+}
+.publish-btn:hover {
   background-color: var(--green-hover);
 }
-.new-post .draft-btn:hover {
+.draft-btn:hover {
   background-color: var(--gray-hover);
 }
 
-.new-post .draft-btn {
-  background-color: var(--gray);
+.edit-btn {
+  background-color: var(--green);
+}
+
+.unpublish-btn,
+.delete-btn {
+  background-color: var(--red-muted);
+}
+
+.edit-btn:hover {
+  background-color: var(--green-hover);
+}
+
+.unpublish-btn:hover,
+.delete-btn:hover {
+  background-color: var(--red-muted-hover);
 }
 
 /* END OF NEW POST PAGE */

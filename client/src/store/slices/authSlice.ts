@@ -7,6 +7,7 @@ export interface UserState {
   user: {
     id: string;
     username: string;
+    admin: boolean;
     created_at: string;
   } | null;
   loading: boolean | null;
