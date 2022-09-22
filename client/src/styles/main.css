@@ -100,6 +100,7 @@ h5 {
   display: flex;
   justify-content: center;
   margin: 0 0 1rem 0;
+  padding: 0 1rem;
 }
 
 .page-wrapper {
@@ -301,10 +302,15 @@ h5 {
   display: flex;
   justify-content: center;
   margin: 0 0 2rem 0;
+  padding: 0 1rem;
 }
 
-.post-content {
-  width: 600px;
+.post .post-content {
+  max-width: 600px;
+}
+
+.preview .post-container {
+  padding: 0;
 }
 
 .post .post-title {
