@@ -9,7 +9,8 @@ export type TQueryResult = {
 export const getUserById = async (
   userId: string | undefined
 ): Promise<TQueryResult> => {
-  const sql = "SELECT id FROM users WHERE id = $1 LIMIT 1";
+  const sql =
+    "SELECT id, username, admin, description, created_at FROM users WHERE id = $1 LIMIT 1";
   const user = await pool.query(sql, [userId]);
 
   if (user.rowCount === 0) {

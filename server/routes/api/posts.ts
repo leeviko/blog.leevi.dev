@@ -306,11 +306,12 @@ router.put(
     const postid = req.params.postid;
     const { title, content, tags, isPrivate, status } = req.body;
 
-    const user = req.session.user;
-    let userExists = await getUserById(user?.id);
-    if (!userExists.ok || !userExists.result) {
+    let user = req.session.user;
+    let userRes = await getUserById(user?.id);
+    if (!userRes.ok || !userRes.result) {
       return res.status(400).json({ msg: "Something went wrong" });
     }
+    user = userRes.result;
 
     const postRes = await pool.query(
       "SELECT postid, title, status FROM posts WHERE postid = $1 LIMIT 1",
@@ -330,6 +331,7 @@ router.put(
       isPrivate,
       status,
       postid,
+      userid: user.id,
     };
 
     const updatedValues: any = {};
@@ -394,6 +396,9 @@ router.put(
     }
 
     sql += " WHERE postid = :postid";
+    if (!user.admin) {
+      sql += " AND authorid = :userid";
+    }
 
     pool.query(named(sql)(params), (err, result) => {
       if (err) {
