@@ -159,6 +159,7 @@
 .markdown-body b,
 .markdown-body strong {
   font-weight: 600;
+  color: black;
 }
 
 .markdown-body dfn {
