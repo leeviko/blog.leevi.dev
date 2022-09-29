@@ -479,6 +479,13 @@ h5 {
   cursor: pointer;
 }
 
+.post-errors {
+  width: 250px;
+  color: var(--red);
+  font-size: 0.9rem;
+  list-style: none;
+}
+
 .publish-btn {
   background-color: var(--green);
 }

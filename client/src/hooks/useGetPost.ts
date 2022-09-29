@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 
-import { TPostResult } from "../types";
+import { TAxiosError, TPostResult } from "../types";
 
 const useGetPost = (postId: string | undefined) => {
   const [post, setPost] = useState<TPostResult | null>(null);
@@ -21,7 +21,18 @@ const useGetPost = (postId: string | undefined) => {
         setPost(res.data.result[0]);
       })
       .catch((err) => {
-        setErrors(err);
+        let error: TAxiosError;
+
+        if (err.response) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = { msg: err.request.statusText, status: err.request.status };
+        }
+        setErrors(error);
+        console.log(error);
       });
   };
 

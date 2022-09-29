@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Navigate } from "react-router-dom";
 import Dialog, { TDialogProps } from "../../components/Dialog";
@@ -35,6 +35,8 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
     title: post?.title || "",
     content: post?.content || "",
   });
+  const [savePressed, setSavePressed] = useState(false);
+  const [localErrors, setLocalErrors] = useState<string[]>([]);
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogContent, setDialogContent] = useState<TDialogProps>({
@@ -79,10 +81,37 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
     });
     setOpenDialog(true);
   };
+
   const handleSave = (e: any) => {
-    const newValues = { ...values, tags, isPrivate };
-    if (post) dispatch(updatePost({ post, newValues }));
+    setLocalErrors([]);
+    if (!values.title || values.title.length <= 5) {
+      setLocalErrors((prev: string[]) => [
+        ...prev,
+        "Title cannot less than 5 characters long",
+      ]);
+    }
+
+    if (post?.status === "live" && !values.content) {
+      setLocalErrors((prev: string[]) => [...prev, "Content cannot be empty"]);
+    }
+
+    if (tags && tags.length > 10) {
+      setLocalErrors((prev: string[]) => [
+        ...prev,
+        "You can have up to 10 tags",
+      ]);
+    }
+    setSavePressed(true);
   };
+
+  useEffect(() => {
+    const newValues = { ...values, tags, isPrivate };
+    if (savePressed && localErrors.length === 0 && post) {
+      dispatch(updatePost({ post, newValues }));
+    }
+    setSavePressed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savePressed]);
 
   const handleDelete = () => {
     if (post) {
@@ -178,6 +207,11 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
                   Publish
                 </button>
               )}
+              <ul className="post-errors">
+                {localErrors &&
+                  localErrors.map((error) => <li key={error}>- {error}</li>)}
+                {errors && <li>- {errors.msg}</li>}
+              </ul>
             </PostSidebar>
           </div>
         </div>
