@@ -200,7 +200,6 @@ router.post(
   "/",
   [
     body("title")
-      .notEmpty()
       .trim()
       .escape()
       .isLength({ min: 5 })
