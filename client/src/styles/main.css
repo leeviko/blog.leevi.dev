@@ -22,13 +22,7 @@
 
   --sidebar-blue: #097e96;
 
-  /* TAGS */
-  --t-red: #cc241d;
-  --t-green: #98971a;
-  --t-yellow: #d79921;
-  --t-blue: #458588;
-  --t-purple: #b16286;
-  --t-aqua: #689d6a;
+  --t-default: rgba(79, 123, 101, 0.847);
 }
 
 @font-face {
