@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import { login } from "../../store/slices/authSlice";
+import { getAuthError, login } from "../../store/slices/authSlice";
 import { AppDispatch, RootState } from "../../store/store";
 import LoaderInline from "../../components/LoaderInline";
 
@@ -12,7 +12,7 @@ const Login = (props: Props) => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch<AppDispatch>();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuth);
-  const errors = useSelector((state: RootState) => state.auth.error);
+  const errors = useSelector(getAuthError);
   const [localErrors, setLocalErrors] = useState("");
   const loading = useSelector((state: RootState) => state.auth.loading);
 
@@ -54,7 +54,7 @@ const Login = (props: Props) => {
               id="password"
             />
             {localErrors || errors ? (
-              <p className="errors">{localErrors || errors}</p>
+              <p className="errors">{localErrors || errors.msg}</p>
             ) : null}
             <div>
               <button
