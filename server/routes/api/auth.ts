@@ -3,19 +3,17 @@ import { scrypt } from "crypto";
 import { body, validationResult } from "express-validator";
 import pool from "../../config/db";
 import cors from "cors";
+import { authLimiter } from "../../middleware/rateLimiter";
 
 const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
 
 const router: Router = express.Router();
 
 router.use("/", corsOpts);
-
-interface pgError extends Error {
-  code?: string;
-}
+router.use("/", authLimiter);
 
 /**
- * @route  POST api/users/login
+ * @route  POST api/auth
  * @desc   Login user
  * @access Public
  */
