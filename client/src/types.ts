@@ -29,3 +29,8 @@ export type TPostQuery = {
   isPrivate: boolean | null;
   status: "live" | "draft" | undefined;
 };
+
+export type TAxiosError = {
+  msg: string;
+  status: number;
+};

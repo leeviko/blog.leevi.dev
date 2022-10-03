@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import useForm from "../../hooks/useForm";
-import { savePost } from "../../store/slices/postSlice";
+import { getPostsError, savePost } from "../../store/slices/postSlice";
 import { AppDispatch } from "../../store/store";
 import Editor from "./PostEditor";
 import Preview from "./PostPreview";
@@ -12,13 +13,17 @@ type Props = {};
 const EditNewPost = (props: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTag, setActiveTag] = useState("");
-  const [tags, setTags] = useState<Array<string>>([]);
+  const [tags, setTags] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [status, setStatus] = useState("");
   const [values, handleChange] = useForm({
     title: "",
     content: "",
   });
   const [mode, setMode] = useState<"edit" | "preview">("edit");
+  const [localErrors, setLocalErrors] = useState<string[]>([]);
+  const errors = useSelector(getPostsError);
+  const [savePressed, setSavePressed] = useState(false);
 
   const handleTagKeys = (e: any) => {
     if ((e.key === " " || e.key === "Enter") && activeTag.trim().length >= 3) {
@@ -30,9 +35,36 @@ const EditNewPost = (props: Props) => {
   };
 
   const handleSave = (e: any) => {
-    const status = e.target.name;
-    dispatch(savePost({ ...values, tags, status, isPrivate }));
+    const currStatus = e.target.name;
+    setStatus(currStatus);
+    setLocalErrors([]);
+    if (!values.title || values.title.length <= 5) {
+      setLocalErrors((prev: string[]) => [
+        ...prev,
+        "Title cannot less than 5 characters long",
+      ]);
+    }
+
+    if (currStatus === "live" && !values.content) {
+      setLocalErrors((prev: string[]) => [...prev, "Content cannot be empty"]);
+    }
+
+    if (tags && tags.length > 10) {
+      setLocalErrors((prev: string[]) => [
+        ...prev,
+        "You can have up to 10 tags",
+      ]);
+    }
+    setSavePressed(true);
   };
+
+  useEffect(() => {
+    if (savePressed && localErrors.length === 0) {
+      dispatch(savePost({ ...values, tags, status, isPrivate }));
+    }
+    setSavePressed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savePressed]);
 
   return (
     <div className="edit-post">
@@ -89,6 +121,11 @@ const EditNewPost = (props: Props) => {
             <button name="draft" className="btn draft-btn" onClick={handleSave}>
               Save draft
             </button>
+            <ul className="post-errors">
+              {localErrors &&
+                localErrors.map((error) => <li key={error}>- {error}</li>)}
+              {errors && <li>- {errors.msg}</li>}
+            </ul>
           </PostSidebar>
         </div>
       </div>

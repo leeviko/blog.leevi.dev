@@ -22,13 +22,7 @@
 
   --sidebar-blue: #097e96;
 
-  /* TAGS */
-  --t-red: #cc241d;
-  --t-green: #98971a;
-  --t-yellow: #d79921;
-  --t-blue: #458588;
-  --t-purple: #b16286;
-  --t-aqua: #689d6a;
+  --t-default: #4f7b65;
 }
 
 @font-face {
@@ -477,6 +471,13 @@ h5 {
   border-radius: 0.2rem;
   color: var(--white);
   cursor: pointer;
+}
+
+.post-errors {
+  width: 250px;
+  color: var(--red);
+  font-size: 0.9rem;
+  list-style: none;
 }
 
 .publish-btn {

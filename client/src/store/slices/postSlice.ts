@@ -4,7 +4,7 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import api from "../../api";
-import { TPostQuery, TPostResult } from "../../types";
+import { TAxiosError, TPostQuery, TPostResult } from "../../types";
 
 const postsAdapter = createEntityAdapter({
   selectId: (post: any) => post.postid,
@@ -19,7 +19,7 @@ export interface IPostState {
     } | null;
   };
   loading: boolean | null;
-  error: string | undefined | null;
+  error: TAxiosError | string | undefined | null;
 }
 
 export type TPostUpdate = {
@@ -38,7 +38,7 @@ const initialState: IPostState = postsAdapter.getInitialState({
 
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
-  async (options: any) => {
+  async (options: any, { rejectWithValue }) => {
     const { limit, cursor, page, status } = options;
 
     try {
@@ -50,28 +50,24 @@ export const fetchPosts = createAsyncThunk(
       return res.data;
     } catch (err: any) {
       console.log("err: ", err);
-      throw new Error(err.response ? err.response.data.msg : err.message);
+      let error: TAxiosError;
+
+      if (err.response) {
+        error = {
+          msg: err.response.data.msg || err.response.data.errors[0].msg,
+          status: err.response.status,
+        };
+      } else {
+        error = { msg: err.request.statusText, status: err.request.status };
+      }
+      return rejectWithValue(error);
     }
   }
 );
 
 export const savePost = createAsyncThunk(
   "posts/savePost",
-  async (post: TPostQuery) => {
-    const { title, content, tags, status } = post;
-
-    if (!title || title.length <= 5) {
-      throw new Error("Title cannot less than 5 characters long");
-    }
-
-    if (status === "live" && !content) {
-      throw new Error("Content cannot be empty");
-    }
-
-    if (tags && tags.length > 10) {
-      throw new Error("You can have up to 10 tags");
-    }
-
+  async (post: TPostQuery, { rejectWithValue }) => {
     const headers = {
       headers: {
         "Content-Type": "application/json",
@@ -85,14 +81,24 @@ export const savePost = createAsyncThunk(
       return res.data;
     } catch (err: any) {
       console.log("err: ", err);
-      throw new Error(err.response ? err.response.data.msg : err.message);
+      let error: TAxiosError;
+
+      if (err.response) {
+        error = {
+          msg: err.response.data.msg || err.response.data.errors[0].msg,
+          status: err.response.status,
+        };
+      } else {
+        error = { msg: err.request.statusText, status: err.request.status };
+      }
+      return rejectWithValue(error);
     }
   }
 );
 
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
-  async (values: TPostUpdate) => {
+  async (values: TPostUpdate, { rejectWithValue }) => {
     const { post } = values;
     const headers = {
       headers: {
@@ -134,7 +140,17 @@ export const updatePost = createAsyncThunk(
       return response.data;
     } catch (err: any) {
       console.log("err: ", err);
-      throw new Error(err.response ? err.response.data.msg : err.message);
+      let error: TAxiosError;
+
+      if (err.response) {
+        error = {
+          msg: err.response.data.msg || err.response.data.errors[0].msg,
+          status: err.response.status,
+        };
+      } else {
+        error = { msg: err.request.statusText, status: err.request.status };
+      }
+      return rejectWithValue(error);
     }
   }
 );
@@ -179,9 +195,13 @@ const postsSlice = createSlice({
         state.loading = false;
         postsAdapter.addOne(state, action.payload);
       })
-      .addCase(savePost.rejected, (state, action) => {
+      .addCase(savePost.rejected, (state, action: any) => {
         state.loading = false;
-        state.error = action.error.message;
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = action.error.message;
+        }
       })
       .addCase(updatePost.pending, (state, action) => {
         state.loading = true;
