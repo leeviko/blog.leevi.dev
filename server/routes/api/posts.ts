@@ -8,9 +8,10 @@ import { auth } from "../../middleware/auth";
 import { convertToSlug } from "../../utils/convertToSlug";
 import { getUserById } from "../../utils/users";
 import { TUserResult } from "./users";
+import { ORIGIN } from "../../utils/constants";
 
 const router = express.Router();
-const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
+const corsOpts = cors({ origin: ORIGIN, credentials: true });
 
 router.use("/", corsOpts);
 

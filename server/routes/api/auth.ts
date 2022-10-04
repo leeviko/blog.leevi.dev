@@ -4,8 +4,9 @@ import { body, validationResult } from "express-validator";
 import pool from "../../config/db";
 import cors from "cors";
 import { authLimiter } from "../../middleware/rateLimiter";
+import { ORIGIN } from "../../utils/constants";
 
-const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
+const corsOpts = cors({ origin: ORIGIN, credentials: true });
 
 const router: Router = express.Router();
 
