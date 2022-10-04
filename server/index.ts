@@ -4,12 +4,14 @@ import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import dotenv from "dotenv";
 import { apiLimiter, authLimiter } from "./middleware/rateLimiter";
+import helmet from "helmet";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
