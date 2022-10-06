@@ -2,7 +2,11 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 import { useSelector } from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper";
-import { getPostsLoading, selectAllPosts } from "../../store/slices/postSlice";
+import {
+  getPostsError,
+  getPostsLoading,
+  selectAllPosts,
+} from "../../store/slices/postSlice";
 
 import PostSmall from "./PostSmall";
 
@@ -18,10 +22,12 @@ const PostSkeleton = () => {
 
 const PostList = () => {
   const posts = useSelector(selectAllPosts);
+  const errors = useSelector(getPostsError);
   const loading = useSelector(getPostsLoading);
 
   return (
     <div className="post-list">
+      {errors && <p className="errors-section">{errors.msg}</p>}
       <LoaderWrapper
         loading={loading !== null && loading}
         loaderComponent={[...Array(8)].map((e, i) => (
