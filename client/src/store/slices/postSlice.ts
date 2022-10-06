@@ -216,6 +216,7 @@ const postsSlice = createSlice({
       })
       .addCase(fetchPosts.fulfilled, (state: any, action) => {
         state.loading = false;
+        state.error = null;
         state.pagination.cursor = action.payload.cursor;
         const loadedPosts = action.payload.result.map((data: any) => {
           return data;
@@ -237,6 +238,7 @@ const postsSlice = createSlice({
       .addCase(savePost.fulfilled, (state: any, action) => {
         state.loading = false;
         postsAdapter.addOne(state, action.payload);
+        state.error = null;
       })
       .addCase(savePost.rejected, (state, action: any) => {
         state.loading = false;
@@ -251,18 +253,31 @@ const postsSlice = createSlice({
       })
       .addCase(updatePost.fulfilled, (state: any, action) => {
         state.loading = false;
+        state.error = null;
       })
       .addCase(updatePost.rejected, (state: any, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = action.error.message;
+        }
       })
       .addCase(deletePost.pending, (state, action) => {
         state.loading = true;
       })
       .addCase(deletePost.fulfilled, (state: any, action) => {
         state.loading = false;
-        const { id } = action.payload;
-        postsAdapter.removeOne(state, id);
+        state.error = null;
+        postsAdapter.removeOne(state, action.payload.id);
+      })
+      .addCase(deletePost.rejected, (state: any, action) => {
+        state.loading = false;
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = action.error.message;
+        }
       });
   },
 });
