@@ -4,6 +4,7 @@ import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import dotenv from "dotenv";
 import helmet from "helmet";
+import { apiRateLimiter } from "./middleware/rateLimiter";
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -37,6 +38,7 @@ app.use(
   })
 );
 
+app.use(apiRateLimiter);
 app.use("/api/users", require("./routes/api/users"));
 app.use("/api/posts", require("./routes/api/posts"));
 app.use("/api/auth", require("./routes/api/auth"));
