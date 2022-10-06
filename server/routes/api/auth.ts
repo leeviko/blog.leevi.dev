@@ -3,19 +3,23 @@ import { scrypt } from "crypto";
 import { body, validationResult } from "express-validator";
 import pool from "../../config/db";
 import cors from "cors";
+import { ORIGIN } from "../../utils/constants";
+import {
+  getUsernameIPkey,
+  limiterConsecutiveFailsByUsernameAndIP,
+  limiterSlowBruteByIP,
+  maxConsecutiveFailsByUsernameAndIP,
+  maxWrongAttemptsByIPperDay,
+} from "../../middleware/rateLimiter";
 
-const corsOpts = cors({ origin: process.env.ORIGIN, credentials: true });
+const corsOpts = cors({ origin: ORIGIN, credentials: true });
 
 const router: Router = express.Router();
 
 router.use("/", corsOpts);
 
-interface pgError extends Error {
-  code?: string;
-}
-
 /**
- * @route  POST api/users/login
+ * @route  POST api/auth
  * @desc   Login user
  * @access Public
  */
@@ -25,7 +29,7 @@ router.post(
     body("username").escape().trim().isLength({ min: 3, max: 50 }),
     body("password").escape().trim(),
   ],
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -37,31 +41,70 @@ router.post(
         .status(400)
         .json({ msg: "Username or password cannot be empty" });
     }
+    const usernameIPkey = getUsernameIPkey(username, req.ip);
+    const [resUsernameAndIP, resSlowByIP] = await Promise.all([
+      limiterConsecutiveFailsByUsernameAndIP.get(usernameIPkey),
+      limiterSlowBruteByIP.get(req.ip),
+    ]);
 
-    const query = {
-      name: "get-user-by-username",
-      text: "SELECT * FROM users WHERE username = $1",
-      values: [username],
-    };
+    let retrySecs = 0;
 
-    pool.query(query, (err, result) => {
+    // Check if IP or Username + IP is already blocked
+    if (
+      resSlowByIP !== null &&
+      resSlowByIP.consumedPoints > maxWrongAttemptsByIPperDay
+    ) {
+      retrySecs = Math.round(resSlowByIP.msBeforeNext / 1000) || 1;
+    } else if (
+      resUsernameAndIP !== null &&
+      resUsernameAndIP.consumedPoints > maxConsecutiveFailsByUsernameAndIP
+    ) {
+      retrySecs = Math.round(resUsernameAndIP.msBeforeNext / 1000) || 1;
+    }
+
+    if (retrySecs > 0) {
+      res.set("Retry-After", String(retrySecs));
+      return res.status(429).json({ msg: "Too many requests" });
+    }
+
+    const sql = "SELECT * FROM users WHERE username = $1 LIMIT 1";
+
+    pool.query(sql, [username], async (err, result) => {
       if (err) {
+        const promises = [limiterSlowBruteByIP.consume(req.ip)];
+        await Promise.all(promises);
         return res.status(400).json({ msg: "Something went wrong" });
       }
       if (result.rowCount == 0) {
-        return res.status(400).json({ msg: "Wrong email or password" });
+        const promises = [limiterSlowBruteByIP.consume(req.ip)];
+        await Promise.all(promises);
+        return res.status(400).json({ msg: "Wrong username or password" });
       }
 
       const user = result.rows[0];
 
       const [salt, key] = user.password.split(":");
-      scrypt(password, salt, 32, (err, derivedKey) => {
+      scrypt(password, salt, 32, async (err, derivedKey) => {
         if (err) {
+          const promises = [
+            limiterSlowBruteByIP.consume(req.ip),
+            limiterConsecutiveFailsByUsernameAndIP.consume(usernameIPkey),
+          ];
+          await Promise.all(promises);
           return res.status(400).json({ msg: "Something went wrong" });
         }
 
         if (key !== derivedKey.toString("hex")) {
+          const promises = [
+            limiterSlowBruteByIP.consume(req.ip),
+            limiterConsecutiveFailsByUsernameAndIP.consume(usernameIPkey),
+          ];
+          await Promise.all(promises);
           return res.status(400).json({ msg: "Wrong username or password" });
+        }
+        if (resUsernameAndIP !== null && resUsernameAndIP.consumedPoints > 0) {
+          // Reset on successful login
+          await limiterConsecutiveFailsByUsernameAndIP.delete(usernameIPkey);
         }
 
         const userObj = {

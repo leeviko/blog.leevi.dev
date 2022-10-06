@@ -4,8 +4,9 @@ import { nanoid } from "nanoid";
 import { body, param, validationResult } from "express-validator";
 import pool from "../../config/db";
 import cors from "cors";
+import { ORIGIN } from "../../utils/constants";
 
-const corsOpts = cors({ origin: process.env.ORIGIN });
+const corsOpts = cors({ origin: ORIGIN });
 
 const router: Router = express.Router();
 

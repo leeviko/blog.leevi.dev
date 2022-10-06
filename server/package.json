@@ -19,9 +19,11 @@
     "express": "^4.18.1",
     "express-session": "^1.17.3",
     "express-validator": "^6.14.2",
+    "helmet": "^6.0.0",
     "ioredis": "^5.1.0",
     "nanoid": "^3.3.4",
     "pg": "^8.7.3",
+    "rate-limiter-flexible": "^2.3.11",
     "yesql": "^5.0.0"
   },
   "devDependencies": {

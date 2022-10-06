@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import api from "../../api";
+import { TAxiosError } from "../../types";
 
 export interface UserState {
   isAuth: boolean | null;
@@ -21,40 +22,66 @@ const initialState: UserState = {
   error: null,
 };
 
-export const login = createAsyncThunk("auth/login", async (values: any) => {
-  const { username, password } = values;
+export const login = createAsyncThunk(
+  "auth/login",
+  async (values: any, { rejectWithValue }) => {
+    const { username, password } = values;
 
-  const headers = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    withCredentials: true,
-  };
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
 
-  const body: any = { username, password };
+    const body: any = { username, password };
 
-  try {
-    const res = await api.post("/auth", body, headers);
+    try {
+      const res = await api.post("/auth", body, headers);
 
-    return res.data;
-  } catch (err: any) {
-    throw new Error(err.response ? err.response.data.msg : err.message);
+      return res.data;
+    } catch (err: any) {
+      let error: TAxiosError;
+
+      if (err.response) {
+        error = {
+          msg: err.response.data.msg || err.response.data.errors[0].msg,
+          status: err.response.status,
+        };
+      } else {
+        error = { msg: err.request.statusText, status: err.request.status };
+      }
+      return rejectWithValue(error);
+    }
   }
-});
+);
 
-export const isAuth = createAsyncThunk("auth/isAuth", async () => {
-  if (!Cookies.get("user_sid")) {
-    throw new Error("Not logged in");
+export const isAuth = createAsyncThunk(
+  "auth/isAuth",
+  async (data, { rejectWithValue }) => {
+    if (!Cookies.get("user_sid")) {
+      throw new Error("Not logged in");
+    }
+
+    try {
+      const res = await api.get("/auth", { withCredentials: true });
+
+      return res.data;
+    } catch (err: any) {
+      let error: TAxiosError;
+
+      if (err.response) {
+        error = {
+          msg: err.response.data.msg || err.response.data.errors[0].msg,
+          status: err.response.status,
+        };
+      } else {
+        error = { msg: err.request.statusText, status: err.request.status };
+      }
+      return rejectWithValue(error);
+    }
   }
-
-  try {
-    const res = await api.get("/auth", { withCredentials: true });
-
-    return res.data;
-  } catch (err: any) {
-    throw new Error(err.response ? err.response.data.msg : err.message);
-  }
-});
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -72,10 +99,14 @@ const authSlice = createSlice({
         state.user = user;
         state.isAuth = true;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(login.rejected, (state: any, action) => {
         state.loading = false;
-        state.error = action.error.message;
         state.isAuth = false;
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = action.error.message;
+        }
       })
       .addCase(isAuth.pending, (state, action) => {
         state.loading = true;
@@ -87,15 +118,20 @@ const authSlice = createSlice({
         state.user = user;
         state.isAuth = true;
       })
-      .addCase(isAuth.rejected, (state, action) => {
+      .addCase(isAuth.rejected, (state: any, action) => {
         state.loading = false;
         state.isAuth = false;
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = action.error.message;
+        }
       });
   },
 });
 
-export const getUserLoading = (state: any) => state.auth.loading;
-export const getUserError = (state: any) => state.auth.error;
+export const getAuthLoading = (state: any) => state.auth.loading;
+export const getAuthError = (state: any) => state.auth.error;
 export const getCount = (state: any) => state.auth.count;
 
 export default authSlice.reducer;
