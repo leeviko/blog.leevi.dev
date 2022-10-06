@@ -49,14 +49,20 @@ export const fetchPosts = createAsyncThunk(
 
       return res.data;
     } catch (err: any) {
-      console.log("err: ", err);
       let error: TAxiosError;
 
       if (err.response) {
-        error = {
-          msg: err.response.data.msg || err.response.data.errors[0].msg,
-          status: err.response.status,
-        };
+        if (err.response.data) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = {
+            msg: "Couldn't load posts, Please check your internet connection",
+            status: err.response.status,
+          };
+        }
       } else {
         error = { msg: err.request.statusText, status: err.request.status };
       }
@@ -80,14 +86,20 @@ export const savePost = createAsyncThunk(
 
       return res.data;
     } catch (err: any) {
-      console.log("err: ", err);
       let error: TAxiosError;
 
       if (err.response) {
-        error = {
-          msg: err.response.data.msg || err.response.data.errors[0].msg,
-          status: err.response.status,
-        };
+        if (err.response.data) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = {
+            msg: "Failed to save post, Please check your internet connection",
+            status: err.response.status,
+          };
+        }
       } else {
         error = { msg: err.request.statusText, status: err.request.status };
       }
@@ -139,14 +151,20 @@ export const updatePost = createAsyncThunk(
       );
       return response.data;
     } catch (err: any) {
-      console.log("err: ", err);
       let error: TAxiosError;
 
       if (err.response) {
-        error = {
-          msg: err.response.data.msg || err.response.data.errors[0].msg,
-          status: err.response.status,
-        };
+        if (err.response.data) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = {
+            msg: "Failed to update post, Please check your internet connection",
+            status: err.response.status,
+          };
+        }
       } else {
         error = { msg: err.request.statusText, status: err.request.status };
       }
@@ -157,12 +175,33 @@ export const updatePost = createAsyncThunk(
 
 export const deletePost = createAsyncThunk(
   "posts/deletePost",
-  async (postId: string) => {
-    const response = await api.delete(`/posts/${postId}`, {
-      withCredentials: true,
-    });
+  async (postId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/posts/${postId}`, {
+        withCredentials: true,
+      });
 
-    return response.data;
+      return response.data;
+    } catch (err: any) {
+      let error: TAxiosError;
+
+      if (err.response) {
+        if (err.response.data) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = {
+            msg: "Failed to delete post, Please check your internet connection",
+            status: err.response.status,
+          };
+        }
+      } else {
+        error = { msg: err.request.statusText, status: err.request.status };
+      }
+      return rejectWithValue(error);
+    }
   }
 );
 
@@ -184,9 +223,13 @@ const postsSlice = createSlice({
 
         postsAdapter.setAll(state, loadedPosts);
       })
-      .addCase(fetchPosts.rejected, (state, action) => {
+      .addCase(fetchPosts.rejected, (state: any, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        if (action.payload) {
+          state.error = action.payload;
+        } else {
+          state.error = action.error.message;
+        }
       })
       .addCase(savePost.pending, (state, action) => {
         state.loading = true;

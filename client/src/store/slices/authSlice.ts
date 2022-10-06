@@ -44,10 +44,17 @@ export const login = createAsyncThunk(
       let error: TAxiosError;
 
       if (err.response) {
-        error = {
-          msg: err.response.data.msg || err.response.data.errors[0].msg,
-          status: err.response.status,
-        };
+        if (err.response.data) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = {
+            msg: "Failed to login, Please check your internet connection",
+            status: err.response.status,
+          };
+        }
       } else {
         error = { msg: err.request.statusText, status: err.request.status };
       }
@@ -71,10 +78,17 @@ export const isAuth = createAsyncThunk(
       let error: TAxiosError;
 
       if (err.response) {
-        error = {
-          msg: err.response.data.msg || err.response.data.errors[0].msg,
-          status: err.response.status,
-        };
+        if (err.response.data) {
+          error = {
+            msg: err.response.data.msg || err.response.data.errors[0].msg,
+            status: err.response.status,
+          };
+        } else {
+          error = {
+            msg: "Failed to authenticate, Please check your internet connection",
+            status: err.response.status,
+          };
+        }
       } else {
         error = { msg: err.request.statusText, status: err.request.status };
       }
