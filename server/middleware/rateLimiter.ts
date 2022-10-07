@@ -5,6 +5,7 @@ const redisClient = new Redis(process.env.REDIS_URL, {
   enableOfflineQueue: false,
 });
 redisClient.on("error", (err) => {
+  console.log(`Redis rate limiter error:  ${err}`);
   return new Error(err);
 });
 

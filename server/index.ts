@@ -21,6 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 const RedisStore = connectRedis(session);
 const redisClient = new Redis(process.env.REDIS_URL);
 
+redisClient.on("error", (err) => {
+  console.log(`Session Redis error:  ${err}`);
+  return new Error(err);
+});
+
 //Configure session middleware
 app.use(
   session({
