@@ -1,15 +1,4 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 14.4
--- Dumped by pg_dump version 14.4
-
---
--- Name: update_modified_column(); Type: FUNCTION; Schema: public; Owner: postgres
---
-
-CREATE FUNCTION IF NOT EXISTS update_modified_column() RETURNS trigger
+CREATE FUNCTION update_modified_column() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
