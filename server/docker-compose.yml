@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   backend:
+    container_name: blog-backend
     build:
       context: .
     ports:
@@ -10,4 +11,4 @@ services:
       - redis
   redis:
     image: redis:7-alpine
-    container_name: store
+    container_name: blog-store
