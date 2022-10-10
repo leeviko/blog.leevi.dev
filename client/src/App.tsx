@@ -18,7 +18,6 @@ function App() {
   return (
     <Router>
       <Navbar />
-      dfg
       <Routes>
         <Route path="/" element={<Home limit={10} cursor="" />} />
         <Route path="/login" element={<Login />} />
