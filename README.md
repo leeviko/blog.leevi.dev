@@ -4,8 +4,8 @@
 
 **Commands:**
 
-Start frontend and backend:
+Start frontend and backend in dev mode:
 
 ```bash
-./start.sh # localhost:3000
+docker compose -f docker-compose.yml --profile client --profile server up
 ```

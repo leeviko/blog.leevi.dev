@@ -1,0 +1,24 @@
+services:
+  server:
+    image: blog-backend-prod
+    container_name: blog-backend-prod
+    build:
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./server/.env
+
+  db:
+    env_file:
+      - ./server/.env
+
+  client:
+    image: blog-frontend-prod
+    container_name: blog-frontend-prod
+    build:
+      dockerfile: Dockerfile.prod
+      args:
+        - BACKEND_IP=$${BACKEND_IP}
+    env_file:
+      - ./client/nginx/.env
+    ports:
+      - "80:80"
