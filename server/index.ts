@@ -2,6 +2,7 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import session from "express-session";
 import Redis from "ioredis";
 import connectRedis from "connect-redis";
+import morgan from "morgan";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import { apiRateLimiter } from "./middleware/rateLimiter";
@@ -11,6 +12,7 @@ const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
+app.use(morgan("tiny"));
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(express.json());
