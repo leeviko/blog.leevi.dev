@@ -29,6 +29,8 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build images
         run: docker compose -f docker-compose.prod.yml build
+      - name: idk
+        run: echo docker-compose.prod.yml
       - name: List images
         run: docker images
       - name: Push images to Container Registry
