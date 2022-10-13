@@ -16,7 +16,7 @@ ENV NODE_ENV production
 ARG BACKEND_IP
 
 COPY --from=0 /app/build /usr/share/nginx/html
-VOLUME ./client/nginx/templates /etc/nginx/templates
+COPY ./client/nginx/templates /etc/nginx/templates
 
 EXPOSE 80
 
