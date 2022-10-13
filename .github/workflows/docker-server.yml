@@ -40,6 +40,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_BACKEND_HOST }}
           username: ${{ secrets.SSH_BACKEND_USERNAME }}
-          password: ${{ secrets.SSH_BACKEND_PASSWORD }}
+          key: ${{ secrets.SSH_BACKEND_KEY }}
           port: ${{ secrets.SSH_BACKEND_PORT }}
+          fingerprint: ${{ secrets.SSH_FRONTEND_FINGERPRINT }}
           script: whoami
