@@ -41,6 +41,7 @@ jobs:
           host: ${{ secrets.SSH_FRONTEND_HOST }}
           username: ${{ secrets.SSH_FRONTEND_USERNAME }}
           key: ${{ secrets.SSH_FRONTEND_KEY }}
+          passphrase: ${{ secrets.SSH_FRONTEND_PASSWORD }}
           port: ${{ secrets.SSH_FRONTEND_PORT }}
           fingerprint: ${{ secrets.SSH_FRONTEND_FINGERPRINT }}
           script: whoami
