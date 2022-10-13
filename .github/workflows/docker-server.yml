@@ -33,9 +33,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build images
         run: docker compose -f docker-compose.prod.yml --profile server build
-      - name: idk
-        run: cat docker-compose.prod.yml
-      - name: List images
-        run: docker images
       - name: Push images to Container Registry
         run: docker compose -f docker-compose.prod.yml push
