@@ -17,7 +17,7 @@ services:
     build:
       dockerfile: Dockerfile.prod
       args:
-        - BACKEND_IP=lol123
+        - BACKEND_IP=$${BACKEND_IP}
     env_file:
       - ./client/nginx/.env
     ports:
