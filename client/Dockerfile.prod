@@ -17,7 +17,7 @@ ARG BACKEND_IP
 
 COPY --from=0 /app/build /usr/share/nginx/html
 
-COPY --from=0 /app/nginx/templates/default.conf.template /etc/nginx/templates
+COPY --from=0 /app/nginx/templates/default.conf.template /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
