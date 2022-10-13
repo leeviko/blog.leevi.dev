@@ -10,7 +10,7 @@ on:
 
 defaults:
   run:
-    working-directory: backend
+    working-directory: server
 
 env:
   REGISTRY: ghcr.io
