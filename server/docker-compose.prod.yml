@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  server:
+    image: ghcr.io/leeviko/blog-backend
+    container_name: blog-backend
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - redis
+      - db
+    profiles:
+      - server
+
+  db:
+    image: postgres:14-alpine
+    container_name: blog-db
+    ports:
+      - "5432:5432"
+    profiles:
+      - server
+
+  redis:
+    image: redis:7-alpine
+    container_name: server-store
+    profiles:
+      - server
