@@ -12,9 +12,6 @@ defaults:
   run:
     working-directory: server
 
-env:
-  REGISTRY: ghcr.io
-
 jobs:
   build-and-push-backend-image:
     runs-on: ubuntu-latest
@@ -34,4 +31,4 @@ jobs:
       - name: Build images
         run: docker compose -f docker-compose.prod.yml --profile server build
       - name: Push images to Container Registry
-        run: docker compose -f docker-compose.prod.yml push
+        run: docker compose -f docker-compose.prod.yml --profile server push
