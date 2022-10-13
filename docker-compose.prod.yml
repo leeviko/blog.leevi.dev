@@ -1,7 +1,7 @@
 services:
   server:
-    image: blog-backend-prod
-    container_name: blog-backend-prod
+    image: ghcr.io/leeviko/blog-backend
+    container_name: blog-backend
     build:
       dockerfile: Dockerfile.prod
     env_file:
@@ -12,8 +12,8 @@ services:
       - ./server/.env
 
   client:
-    image: blog-frontend-prod
-    container_name: blog-frontend-prod
+    image: ghcr.io/leeviko/blog-frontend
+    container_name: blog-frontend
     build:
       dockerfile: Dockerfile.prod
       args:
