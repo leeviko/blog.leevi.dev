@@ -14,6 +14,7 @@ FROM nginx:1.23-alpine
 ENV NODE_ENV production
 
 ARG BACKEND_IP
+ENV BACKEND_IP $BACKEND_IP
 
 COPY --from=0 /app/build /usr/share/nginx/html
 
