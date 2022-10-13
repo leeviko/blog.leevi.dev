@@ -1,0 +1,38 @@
+name: Build and publish backend images
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "server/**"
+      - ".github/workflows"
+      - "docker-compose*.yml"
+
+defaults:
+  run:
+    working-directory: server
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push-backend-image:
+    runs-on: ubuntu-latest
+  steps:
+    - name: Checkout the repo
+      uses: actions/checkout@3
+    - name: Create .env
+      run: |
+        touch .env
+        echo "${{ secrets.SERVER_ENV_PROD }}" > .env
+        cat .env
+    - name: Build images
+      run: docker compose -f ../docker-compose.yml -f ../docker-compose.prod.yml --profile server build
+    - name: Login to Github Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push images to Container Registry
+      run: docker compose -f ../docker-compose.yml -f ../docker-compose.prod.yml --profile server push
