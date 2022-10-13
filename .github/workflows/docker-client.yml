@@ -1,0 +1,30 @@
+name: Build and publish frontend images
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "client/**"
+      - ".github/workflows/**"
+      - "docker-compose*.yml"
+
+defaults:
+  run:
+    working-directory: client
+
+jobs:
+  build-and-push-frontend-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build images
+        run: docker compose -f docker-compose.prod.yml --profile client build
+      - name: Push images to Container Registry
+        run: docker compose -f docker-compose.prod.yml --profile client push

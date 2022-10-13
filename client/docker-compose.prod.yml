@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  client:
+    image: ghcr.io/leeviko/blog-frontend
+    container_name: blog-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        - BACKEND_IP=$${BACKEND_IP}
+    env_file:
+      - ./nginx/.env
+    ports:
+      - "80:80"
+    profiles:
+      - client
