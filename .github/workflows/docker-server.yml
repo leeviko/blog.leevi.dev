@@ -32,3 +32,14 @@ jobs:
         run: docker compose -f docker-compose.prod.yml --profile server build
       - name: Push images to Container Registry
         run: docker compose -f docker-compose.prod.yml --profile server push
+  deploy-to-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy changes
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_BACKEND_HOST }}
+          username: ${{ secrets.SSH_BACKEND_USERNAME }}
+          password: ${{ secrets.SSH_BACKEND_PASSWORD }}
+          port: ${{ secrets.SSH_BACKEND_PORT }}
+          script: whoami
