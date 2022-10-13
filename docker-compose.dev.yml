@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  server:
+    image: blog-backend-dev
+    container_name: blog-backend-dev
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env.local
+
+  db:
+    env_file:
+      - ./server/.env.local
+    volumes:
+      - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  client:
+    image: blog-frontend-dev
+    container_name: blog-frontend-dev
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./client/src:/app/src
+    env_file:
+      - ./client/.env
+      - ./client/nginx/.env.local
+    environment:
+      - WATCHPACK_POLLING=true
+    ports:
+      - "3000:3000"
