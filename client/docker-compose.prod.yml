@@ -8,9 +8,7 @@ services:
       context: .
       dockerfile: Dockerfile.prod
       args:
-        - BACKEND_IP=$${BACKEND_IP}
-    env_file:
-      - ./nginx/.env
+        BACKEND_IP: $${BACKEND_IP}
     ports:
       - "80:80"
     profiles:
