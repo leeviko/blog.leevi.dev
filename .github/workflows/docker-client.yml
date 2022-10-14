@@ -24,10 +24,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build images
-        run: docker compose -f docker-compose.prod.yml --profile client build --build-arg ${{ secrets.SERVER_NGINX_ENV_PROD }}
-      - name: Push images to Container Registry
-        run: docker compose -f docker-compose.prod.yml --profile client push
+      - name: Build image
+        run: docker build -f Dockerfile.prod -t ghcr.io/leeviko/blog-frontend .
+      - name: Push image to Container Registry
+        run: docker push ghcr.io/leeviko/blog-frontend
   deploy-to-server:
     runs-on: ubuntu-latest
     steps:

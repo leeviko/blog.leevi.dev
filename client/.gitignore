@@ -19,6 +19,7 @@
 .env.production.local
 
 nginx/.env
+nginx/backend_ip.txt
 
 npm-debug.log*
 yarn-debug.log*

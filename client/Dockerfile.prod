@@ -6,15 +6,12 @@ WORKDIR /app
 
 COPY package*.json ./
 COPY tsconfig.json ./
-RUN npm ci --only=production
+RUN npm ci --emit=dev
 COPY . .
 RUN npm run build
 
 FROM nginx:1.23-alpine
 ENV NODE_ENV production
-
-ARG BACKEND_IP
-ENV BACKEND_IP $BACKEND_IP
 
 COPY --from=0 /app/build /usr/share/nginx/html
 
