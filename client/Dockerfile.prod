@@ -12,6 +12,7 @@ RUN npm run build
 
 FROM nginx:1.23-alpine
 ENV NODE_ENV production
+ENV REACT_APP_API_URL https://blog.leevi.dev/api
 
 COPY --from=0 /app/build /usr/share/nginx/html
 
