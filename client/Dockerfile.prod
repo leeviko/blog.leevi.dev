@@ -17,6 +17,6 @@ COPY --from=0 /app/build /usr/share/nginx/html
 
 COPY --from=0 /app/nginx/templates/default.conf.template /etc/nginx/templates/default.conf.template
 
-EXPOSE 80
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]
