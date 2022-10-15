@@ -4,6 +4,24 @@ upstream backend {
 
 server {
   listen 80;
+  listen [::]:80;
+  server_name blog.leevi.dev;
+
+  location /.well-known/acme-challenge/ {
+    root /var/www/certbot;
+  }
+
+  location / {
+    return 301 https://blog.leevi.dev$request_uri;
+  }
+}
+
+server {
+  listen 443 ssl;
+  server_name blog.leevi.dev;
+
+  ssl_certificate     /etc/letsencrypt/live/blog.leevi.dev/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/blog.leevi.dev/privkey.pem;
 
   location / {
     root /usr/share/nginx/html;
