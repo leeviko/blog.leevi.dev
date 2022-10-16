@@ -5,29 +5,48 @@ services:
     image: blog-backend-dev
     container_name: blog-backend-dev
     build:
+      context: ./server
       dockerfile: Dockerfile.dev
     ports:
       - "5000:5000"
     env_file:
       - ./server/.env.local
+    depends_on:
+      - redis
+      - db
+    profiles:
+      - server
 
   db:
+    image: postgres:14-alpine
+    container_name: blog-db-dev
+    ports:
+      - "5432:5432"
     env_file:
       - ./server/.env.local
     volumes:
       - ./server/init.sql:/docker-entrypoint-initdb.d/init.sql
+    profiles:
+      - server
+  redis:
+    image: redis:7-alpine
+    container_name: store
+    profiles:
+      - server
 
   client:
     image: blog-frontend-dev
     container_name: blog-frontend-dev
     build:
+      context: ./client
       dockerfile: Dockerfile.dev
     volumes:
       - ./client/src:/app/src
     env_file:
       - ./client/.env
-      - ./client/nginx/.env.local
     environment:
       - WATCHPACK_POLLING=true
     ports:
       - "3000:3000"
+    profiles:
+      - client
