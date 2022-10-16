@@ -11,6 +11,9 @@ services:
       - "5000:5000"
     env_file:
       - ./server/.env.local
+    volumes:
+      - /app/node_modules
+      - ./server:/app
     depends_on:
       - redis
       - db

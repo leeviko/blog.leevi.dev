@@ -6,7 +6,6 @@ on:
     paths:
       - "client/**"
       - ".github/workflows/**"
-      - "docker-compose*.yml"
 
 defaults:
   run:
