@@ -7,7 +7,9 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import { apiRateLimiter } from "./middleware/rateLimiter";
 
-dotenv.config();
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
+});
 const port = process.env.PORT || 5000;
 
 const app: Express = express();
