@@ -7,6 +7,8 @@ COPY tsconfig.json ./
 RUN npm install && npm install -g typescript
 COPY . . 
 
+RUN mkdir -p dist && chown node:node dist
+
 EXPOSE 5000
 
 USER node
