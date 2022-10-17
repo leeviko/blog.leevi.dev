@@ -7,10 +7,10 @@ import api from "../../api";
 import { TAxiosError, TPostQuery, TPostResult } from "../../types";
 
 const postsAdapter = createEntityAdapter({
-  selectId: (post: any) => post.postid,
+  selectId: (post: TPostResult) => post.postid,
 });
 
-export interface IPostState {
+export interface IPostInitialState {
   pagination: {
     limit: number;
     cursor: {
@@ -27,7 +27,7 @@ export type TPostUpdate = {
   newValues: any;
 };
 
-const initialState: IPostState = postsAdapter.getInitialState({
+const initialState: IPostInitialState = postsAdapter.getInitialState({
   pagination: {
     limit: 10,
     cursor: null,
@@ -222,20 +222,17 @@ const postsSlice = createSlice({
       .addCase(fetchPosts.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(fetchPosts.fulfilled, (state: any, action) => {
+      .addCase(fetchPosts.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         state.pagination.cursor = action.payload.cursor;
-        const loadedPosts = action.payload.result.map((data: any) => {
-          return data;
-        });
-
-        postsAdapter.setAll(state, loadedPosts);
       })
-      .addCase(fetchPosts.rejected, (state: any, action) => {
+      .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload) {
-          state.error = action.payload;
+
+        let actionError = action.payload as TAxiosError;
+        if (actionError) {
+          state.error = actionError;
         } else {
           state.error = action.error.message;
         }
@@ -243,15 +240,16 @@ const postsSlice = createSlice({
       .addCase(savePost.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(savePost.fulfilled, (state: any, action) => {
+      .addCase(savePost.fulfilled, (state, action) => {
         state.loading = false;
-        postsAdapter.addOne(state, action.payload);
         state.error = null;
       })
-      .addCase(savePost.rejected, (state, action: any) => {
+      .addCase(savePost.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload) {
-          state.error = action.payload;
+
+        let actionError = action.payload as TAxiosError;
+        if (actionError) {
+          state.error = actionError;
         } else {
           state.error = action.error.message;
         }
@@ -259,14 +257,16 @@ const postsSlice = createSlice({
       .addCase(updatePost.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(updatePost.fulfilled, (state: any, action) => {
+      .addCase(updatePost.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
       })
-      .addCase(updatePost.rejected, (state: any, action) => {
+      .addCase(updatePost.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload) {
-          state.error = action.payload;
+
+        let actionError = action.payload as TAxiosError;
+        if (actionError) {
+          state.error = actionError;
         } else {
           state.error = action.error.message;
         }
@@ -274,15 +274,16 @@ const postsSlice = createSlice({
       .addCase(deletePost.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(deletePost.fulfilled, (state: any, action) => {
+      .addCase(deletePost.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        postsAdapter.removeOne(state, action.payload.id);
       })
-      .addCase(deletePost.rejected, (state: any, action) => {
+      .addCase(deletePost.rejected, (state, action) => {
         state.loading = false;
-        if (action.payload) {
-          state.error = action.payload;
+
+        let actionError = action.payload as TAxiosError;
+        if (actionError) {
+          state.error = actionError;
         } else {
           state.error = action.error.message;
         }

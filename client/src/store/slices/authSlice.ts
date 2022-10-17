@@ -2,8 +2,9 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import api from "../../api";
 import { TAxiosError } from "../../types";
+import { RootState } from "../store";
 
-export interface UserState {
+export interface IUserState {
   isAuth: boolean | null;
   user: {
     id: string;
@@ -12,10 +13,10 @@ export interface UserState {
     created_at: string;
   } | null;
   loading: boolean | null;
-  error: string | undefined | null;
+  error: TAxiosError | string | undefined | null;
 }
 
-const initialState: UserState = {
+const initialState: IUserState = {
   isAuth: null,
   user: null,
   loading: null,
@@ -110,18 +111,20 @@ const authSlice = createSlice({
       .addCase(login.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(login.fulfilled, (state: any, action) => {
+      .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         const user = action.payload;
         state.user = user;
         state.isAuth = true;
       })
-      .addCase(login.rejected, (state: any, action) => {
+      .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.isAuth = false;
-        if (action.payload) {
-          state.error = action.payload;
+
+        let actionError = action.payload as TAxiosError;
+        if (actionError) {
+          state.error = actionError;
         } else {
           state.error = action.error.message;
         }
@@ -129,18 +132,20 @@ const authSlice = createSlice({
       .addCase(isAuth.pending, (state, action) => {
         state.loading = true;
       })
-      .addCase(isAuth.fulfilled, (state: any, action) => {
+      .addCase(isAuth.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         state.isAuth = true;
         const user = action.payload.sessUser;
         state.user = user;
       })
-      .addCase(isAuth.rejected, (state: any, action) => {
+      .addCase(isAuth.rejected, (state, action) => {
         state.loading = false;
         state.isAuth = false;
-        if (action.payload) {
-          state.error = action.payload;
+
+        let actionError = action.payload as TAxiosError;
+        if (actionError) {
+          state.error = actionError;
         } else {
           state.error = action.error.message;
         }
@@ -148,8 +153,7 @@ const authSlice = createSlice({
   },
 });
 
-export const getAuthLoading = (state: any) => state.auth.loading;
-export const getAuthError = (state: any) => state.auth.error;
-export const getCount = (state: any) => state.auth.count;
+export const getAuthLoading = (state: RootState) => state.auth.loading;
+export const getAuthError = (state: RootState) => state.auth.error;
 
 export default authSlice.reducer;

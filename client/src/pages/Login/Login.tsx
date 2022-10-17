@@ -60,7 +60,12 @@ const Login = (props: Props) => {
               id="password"
             />
             {localErrors || errors ? (
-              <p className="errors">{localErrors || errors.msg}</p>
+              <p className="errors">
+                {localErrors ||
+                  (errors && typeof errors === "object"
+                    ? errors.msg
+                    : "Failed to login")}
+              </p>
             ) : null}
             <div>
               <button
