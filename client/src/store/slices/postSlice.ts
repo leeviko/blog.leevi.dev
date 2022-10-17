@@ -226,6 +226,11 @@ const postsSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.pagination.cursor = action.payload.cursor;
+        const loadedPosts = action.payload.result.map((data: any) => {
+          return data;
+        });
+
+        postsAdapter.setAll(state as any, loadedPosts);
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
