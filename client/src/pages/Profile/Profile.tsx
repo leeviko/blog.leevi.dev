@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import withAuth from "../../components/WithAuth";
 import ProfileSidebar from "./ProfileSidebar";
@@ -6,6 +6,10 @@ import ProfileSidebar from "./ProfileSidebar";
 type Props = {};
 
 const Profile = (props: Props) => {
+  useEffect(() => {
+    document.title = "Blog - Profile";
+  }, []);
+
   return (
     <div className="profile page">
       <div className="page-wrapper">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGetPost from "../../hooks/useGetPost";
 import { TPostResult } from "../../types";
@@ -27,6 +27,12 @@ const Post = () => {
     onClose: undefined,
     onConfirm: undefined,
   });
+
+  useEffect(() => {
+    if (post) {
+      document.title = `Blog - ${post?.title}`;
+    }
+  }, [post]);
 
   // TODO: Move these to different component. (PostSidebar)
   const handleEdit = () => {
