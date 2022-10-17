@@ -29,83 +29,85 @@ export type TUserResult = {
  * @desc   Create new user
  * @access Public
  */
-router.post(
-  "/",
-  [
-    body("username").escape().trim().isLength({ min: 3, max: 50 }),
-    body("password").escape().trim(),
-  ],
-  async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
+if (process.env.NODE_ENV !== "production") {
+  router.post(
+    "/",
+    [
+      body("username").escape().trim().isLength({ min: 3, max: 50 }),
+      body("password").escape().trim(),
+    ],
+    async (req: Request, res: Response) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
 
-    const { username, password } = req.body;
+      const { username, password } = req.body;
 
-    if (!username || !password) {
-      return res
-        .status(400)
-        .json({ msg: "Username or password cannot be empty" });
-    }
-
-    // Check if user already exists
-    const sql = "SELECT username FROM users WHERE username = $1 LIMIT 1";
-
-    const userExists = await pool.query(sql, [username]);
-    if (userExists.rowCount === 1) {
-      return res.status(400).json({ msg: "Username is already in use" });
-    }
-
-    // generate random 16 bytes long salt
-    const salt = randomBytes(16).toString("hex");
-
-    scrypt(password, salt, 32, (err, derivedKey) => {
-      if (err)
+      if (!username || !password) {
         return res
           .status(400)
-          .json({ msg: "Something went wrong while registering" });
+          .json({ msg: "Username or password cannot be empty" });
+      }
 
-      const hash = salt + ":" + derivedKey.toString("hex");
-      const id = nanoid();
+      // Check if user already exists
+      const sql = "SELECT username FROM users WHERE username = $1 LIMIT 1";
 
-      const query = {
-        name: "create-user",
-        text: "INSERT INTO users (id, username, password) VALUES ($1, $2, $3)",
-        values: [id, username, hash],
-      };
+      const userExists = await pool.query(sql, [username]);
+      if (userExists.rowCount === 1) {
+        return res.status(400).json({ msg: "Username is already in use" });
+      }
 
-      pool.query(query, (err: pgError, result) => {
-        if (err) {
-          switch (err.code) {
-            case "23505":
-              return res.status(400).json({ msg: "Username already in use" });
-            default:
-              return res
-                .status(400)
-                .json({ msg: "Something went wrong while registering" });
-          }
-        }
-        if (result.rowCount === 0) {
+      // generate random 16 bytes long salt
+      const salt = randomBytes(16).toString("hex");
+
+      scrypt(password, salt, 32, (err, derivedKey) => {
+        if (err)
           return res
             .status(400)
             .json({ msg: "Something went wrong while registering" });
-        }
 
-        const user = {
-          id,
-          username,
-          admin: null,
-          created_at: new Date(),
+        const hash = salt + ":" + derivedKey.toString("hex");
+        const id = nanoid();
+
+        const query = {
+          name: "create-user",
+          text: "INSERT INTO users (id, username, password) VALUES ($1, $2, $3)",
+          values: [id, username, hash],
         };
 
-        req.session.user = user;
+        pool.query(query, (err: pgError, result) => {
+          if (err) {
+            switch (err.code) {
+              case "23505":
+                return res.status(400).json({ msg: "Username already in use" });
+              default:
+                return res
+                  .status(400)
+                  .json({ msg: "Something went wrong while registering" });
+            }
+          }
+          if (result.rowCount === 0) {
+            return res
+              .status(400)
+              .json({ msg: "Something went wrong while registering" });
+          }
 
-        return res.json(user);
+          const user = {
+            id,
+            username,
+            admin: null,
+            created_at: new Date(),
+          };
+
+          req.session.user = user;
+
+          return res.json(user);
+        });
       });
-    });
-  }
-);
+    }
+  );
+}
 
 /**
  * @route  GET api/users/:id
