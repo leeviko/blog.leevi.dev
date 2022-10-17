@@ -64,7 +64,9 @@ router.post(
 
     if (retrySecs > 0) {
       res.set("Retry-After", String(retrySecs));
-      return res.status(429).json({ msg: "Too many requests" });
+      return res.status(429).json({
+        msg: "You have done too many failed attempts. Try again later",
+      });
     }
 
     const sql = "SELECT * FROM users WHERE username = $1 LIMIT 1";
@@ -131,7 +133,7 @@ router.get("/", (req, res) => {
   const sessUser = req.session.user;
 
   if (!sessUser) {
-    return res.status(401).json({ msg: "Not logged in" });
+    return res.status(401).json({ msg: "Unauthenticated" });
   } else {
     return res.json({
       sessUser,
