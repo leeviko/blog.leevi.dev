@@ -27,7 +27,9 @@ const PostList = () => {
 
   return (
     <div className="post-list">
-      {errors && <p className="errors-section">{errors.msg}</p>}
+      {errors && (
+        <p className="errors-section">{errors.msg || "Something went wrong"}</p>
+      )}
       <LoaderWrapper
         loading={loading !== null && loading}
         loaderComponent={[...Array(8)].map((e, i) => (

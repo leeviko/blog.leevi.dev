@@ -5,35 +5,58 @@ const redisClient = new Redis(process.env.REDIS_URL, {
   enableOfflineQueue: false,
 });
 redisClient.on("error", (err) => {
-  console.log(`Redis rate limiter error:  ${err}`);
+  console.log(`Rate limiter error:  ${err}`);
   return new Error(err);
 });
 
 // Rate limiter points
 // API
-const maxPointsPerHour = 150;
+const maxPointsPerHour = 100;
+const maxPointsPerMinute = 15;
 // Login
-export const maxWrongAttemptsByIPperDay = 50;
+export const maxWrongAttemptsByIPperDay = 15;
 export const maxConsecutiveFailsByUsernameAndIP = 5;
 
 // ******************
 // API rate limiter
 // ******************
-const apiRateLimiterRedis = new RateLimiterRedis({
+const apiHourRateLimiterRedis = new RateLimiterRedis({
   storeClient: redisClient,
-  keyPrefix: "api_rate_limit",
+  keyPrefix: "api__hour_rate_limit",
   points: maxPointsPerHour,
   duration: 60 * 60, // 1 hour
 });
+const apiMinuteRateLimiterRedis = new RateLimiterRedis({
+  storeClient: redisClient,
+  keyPrefix: "api__minute_rate_limit",
+  points: maxPointsPerMinute,
+  duration: 60, // 1 minute
+});
 
-export const apiRateLimiter = (
+export const apiHourRateLimiter = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const key = req.ip;
 
-  apiRateLimiterRedis
+  apiHourRateLimiterRedis
+    .consume(key, 1) // TODO: Consume based on route
+    .then(() => {
+      return next();
+    })
+    .catch((err) => {
+      return res.status(429).json({ msg: "Too many requests" });
+    });
+};
+export const apiMinuteRateLimiter = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const key = req.ip;
+
+  apiMinuteRateLimiterRedis
     .consume(key, 1) // TODO: Consume based on route
     .then(() => {
       return next();

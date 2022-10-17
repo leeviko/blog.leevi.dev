@@ -18,6 +18,8 @@ const Login = (props: Props) => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    setLocalErrors("");
+
     if (loading) {
       return;
     }
