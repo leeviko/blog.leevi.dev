@@ -105,7 +105,7 @@ export const apiMinuteRateLimiter = (
 // ******************
 export const limiterSlowBruteByIP = new RateLimiterRedis({
   storeClient: redisClient,
-  keyPrefix: "login_fail_ip_per_day",
+  keyPrefix: "login__fail_ip_per_day",
   points: maxWrongAttemptsByIPperDay,
   duration: 60 * 60 * 24, // 1 day
   blockDuration: 60 * 60 * 24, // 1 day
@@ -113,7 +113,7 @@ export const limiterSlowBruteByIP = new RateLimiterRedis({
 
 export const limiterConsecutiveFailsByUsernameAndIP = new RateLimiterRedis({
   storeClient: redisClient,
-  keyPrefix: "login_fail_consecutive_username_and_ip",
+  keyPrefix: "login__fail_consecutive_username_and_ip",
   points: maxConsecutiveFailsByUsernameAndIP,
   duration: 60 * 60 * 24 * 90, // Store number for 90 days since first fail
   blockDuration: 60 * 60, // 1 hour
