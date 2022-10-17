@@ -5,7 +5,7 @@ const redisClient = new Redis(process.env.REDIS_URL, {
   enableOfflineQueue: false,
 });
 redisClient.on("error", (err) => {
-  console.log(`Redis rate limiter error:  ${err}`);
+  console.log(`Rate limiter error:  ${err}`);
   return new Error(err);
 });
 
@@ -22,14 +22,14 @@ export const maxConsecutiveFailsByUsernameAndIP = 5;
 // ******************
 const apiHourRateLimiterRedis = new RateLimiterRedis({
   storeClient: redisClient,
-  keyPrefix: "api_rate_limit",
+  keyPrefix: "api__hour_rate_limit",
   points: maxPointsPerHour,
   duration: 60 * 60, // 1 hour
 });
 const apiMinuteRateLimiterRedis = new RateLimiterRedis({
   storeClient: redisClient,
-  keyPrefix: "api_rate_limit",
-  points: maxPointsPerHour,
+  keyPrefix: "api__minute_rate_limit",
+  points: maxPointsPerMinute,
   duration: 60, // 1 minute
 });
 
