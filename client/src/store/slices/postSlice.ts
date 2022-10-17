@@ -59,12 +59,14 @@ export const fetchPosts = createAsyncThunk(
           };
         } else {
           error = {
-            msg: "Couldn't load posts, Please check your internet connection",
+            msg: "Couldn't load posts",
             status: err.response.status,
           };
         }
-      } else {
+      } else if (err.request) {
         error = { msg: err.request.statusText, status: err.request.status };
+      } else {
+        error = { msg: err.message, status: 500 };
       }
       return rejectWithValue(error);
     }
@@ -96,12 +98,14 @@ export const savePost = createAsyncThunk(
           };
         } else {
           error = {
-            msg: "Failed to save post, Please check your internet connection",
+            msg: "Failed to save post",
             status: err.response.status,
           };
         }
-      } else {
+      } else if (err.request) {
         error = { msg: err.request.statusText, status: err.request.status };
+      } else {
+        error = { msg: err.message, status: 500 };
       }
       return rejectWithValue(error);
     }
@@ -161,12 +165,14 @@ export const updatePost = createAsyncThunk(
           };
         } else {
           error = {
-            msg: "Failed to update post, Please check your internet connection",
+            msg: "Failed to update post",
             status: err.response.status,
           };
         }
-      } else {
+      } else if (err.request) {
         error = { msg: err.request.statusText, status: err.request.status };
+      } else {
+        error = { msg: err.message, status: 500 };
       }
       return rejectWithValue(error);
     }
@@ -193,12 +199,14 @@ export const deletePost = createAsyncThunk(
           };
         } else {
           error = {
-            msg: "Failed to delete post, Please check your internet connection",
+            msg: "Failed to delete post",
             status: err.response.status,
           };
         }
-      } else {
+      } else if (err.request) {
         error = { msg: err.request.statusText, status: err.request.status };
+      } else {
+        error = { msg: err.message, status: 500 };
       }
       return rejectWithValue(error);
     }

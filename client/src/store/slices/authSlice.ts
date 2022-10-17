@@ -51,12 +51,14 @@ export const login = createAsyncThunk(
           };
         } else {
           error = {
-            msg: "Failed to login, Please check your internet connection",
+            msg: "Failed to login",
             status: err.response.status,
           };
         }
-      } else {
+      } else if (err.request) {
         error = { msg: err.request.statusText, status: err.request.status };
+      } else {
+        error = { msg: err.message, status: 500 };
       }
       return rejectWithValue(error);
     }
@@ -85,12 +87,14 @@ export const isAuth = createAsyncThunk(
           };
         } else {
           error = {
-            msg: "Failed to authenticate, Please check your internet connection",
+            msg: "Failed to authenticate",
             status: err.response.status,
           };
         }
-      } else {
+      } else if (err.request) {
         error = { msg: err.request.statusText, status: err.request.status };
+      } else {
+        error = { msg: err.message, status: 500 };
       }
       return rejectWithValue(error);
     }
