@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { getAuthError, login } from "../../store/slices/authSlice";
@@ -15,6 +15,10 @@ const Login = (props: Props) => {
   const errors = useSelector(getAuthError);
   const [localErrors, setLocalErrors] = useState("");
   const loading = useSelector((state: RootState) => state.auth.loading);
+
+  useEffect(() => {
+    document.title = "Blog - Login";
+  }, []);
 
   const handleSubmit = (e: any) => {
     e.preventDefault();

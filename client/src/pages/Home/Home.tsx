@@ -13,6 +13,10 @@ const Home = ({ limit, cursor }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    document.title = "Blog - Recent posts";
+  }, []);
+
+  useEffect(() => {
     dispatch(fetchPosts({ limit, cursor, status: "live" }));
   }, [cursor, dispatch, limit]);
 

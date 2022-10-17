@@ -29,6 +29,10 @@ const Archive = ({ limit, cursor }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
+    document.title = "Blog - Archive";
+  }, []);
+
+  useEffect(() => {
     if (!moveType) {
       dispatch(
         fetchPosts({

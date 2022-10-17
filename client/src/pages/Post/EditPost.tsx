@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import withAuth from "../../components/WithAuth";
 import EditNewPost from "./EditNewPost";
@@ -9,6 +9,10 @@ type Props = {};
 const EditPost = (props: Props) => {
   const location = useLocation().pathname;
   const { slug } = useParams();
+
+  useEffect(() => {
+    document.title = "Blog - Edit post";
+  }, []);
 
   return (
     <>
