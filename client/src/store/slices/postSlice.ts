@@ -5,12 +5,16 @@ import {
 } from "@reduxjs/toolkit";
 import api from "../../api";
 import { TAxiosError, TPostQuery, TPostResult } from "../../types";
+import { RootState } from "../store";
 
-const postsAdapter = createEntityAdapter({
+const postsAdapter = createEntityAdapter<TPostResult>({
   selectId: (post: TPostResult) => post.postid,
+  sortComparer: (a, b) => a.created_at.localeCompare(b.created_at),
 });
 
-export interface IPostInitialState {
+export interface IPostState {
+  ids: string[];
+  entities: object;
   pagination: {
     limit: number;
     cursor: {
@@ -27,7 +31,9 @@ export type TPostUpdate = {
   newValues: any;
 };
 
-const initialState: IPostInitialState = postsAdapter.getInitialState({
+const initialState: IPostState = postsAdapter.getInitialState({
+  ids: [],
+  entities: {},
   pagination: {
     limit: 10,
     cursor: null,
@@ -248,6 +254,8 @@ const postsSlice = createSlice({
       .addCase(savePost.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
+
+        postsAdapter.addOne(state as any, action.payload);
       })
       .addCase(savePost.rejected, (state, action) => {
         state.loading = false;
@@ -302,8 +310,8 @@ export const {
   selectIds: selectPostIds,
 } = postsAdapter.getSelectors((state: any) => state.posts);
 
-export const getPostsLoading = (state: any) => state.posts.loading;
-export const getPostsError = (state: any) => state.posts.error;
-export const getPostsPagination = (state: any) => state.posts.pagination;
+export const getPostsLoading = (state: RootState) => state.posts.loading;
+export const getPostsError = (state: RootState) => state.posts.error;
+export const getPostsPagination = (state: RootState) => state.posts.pagination;
 
 export default postsSlice.reducer;

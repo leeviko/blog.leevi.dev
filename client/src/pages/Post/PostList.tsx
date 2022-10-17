@@ -28,7 +28,9 @@ const PostList = () => {
   return (
     <div className="post-list">
       {errors && (
-        <p className="errors-section">{errors.msg || "Something went wrong"}</p>
+        <p className="errors-section">
+          {(typeof errors === "object" && errors.msg) || "Something went wrong"}
+        </p>
       )}
       <LoaderWrapper
         loading={loading !== null && loading}

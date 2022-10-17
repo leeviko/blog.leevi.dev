@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
-import { getPostsError, savePost } from "../../store/slices/postSlice";
-import { AppDispatch } from "../../store/store";
+import {
+  getPostsError,
+  getPostsLoading,
+  savePost,
+  selectPostById,
+} from "../../store/slices/postSlice";
+import { AppDispatch, RootState, store } from "../../store/store";
 import Editor from "./PostEditor";
 import Preview from "./PostPreview";
 import PostSidebar from "./PostSidebar";
@@ -23,7 +29,11 @@ const EditNewPost = (props: Props) => {
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [localErrors, setLocalErrors] = useState<string[]>([]);
   const errors = useSelector(getPostsError);
+  const loading = useSelector(getPostsLoading);
   const [savePressed, setSavePressed] = useState(false);
+  const [postSubmitted, setPostSubmitted] = useState(false);
+  const navigate = useNavigate();
+  const posts = useSelector((state: RootState) => state.posts);
 
   const handleTagKeys = (e: any) => {
     if ((e.key === " " || e.key === "Enter") && activeTag.trim().length >= 3) {
@@ -60,11 +70,22 @@ const EditNewPost = (props: Props) => {
 
   useEffect(() => {
     if (savePressed && localErrors.length === 0) {
+      setPostSubmitted(true);
       dispatch(savePost({ ...values, tags, status, isPrivate }));
     }
     setSavePressed(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savePressed]);
+
+  useEffect(() => {
+    if (postSubmitted && !loading && !errors) {
+      const getNewPost = selectPostById(
+        store.getState(),
+        store.getState().posts.ids[posts.ids.length - 1]
+      );
+      navigate(`/posts/${getNewPost?.slug}`);
+    }
+  }, [postSubmitted, loading, errors, posts.ids.length, navigate]);
 
   return (
     <div className="edit-post">
@@ -124,7 +145,7 @@ const EditNewPost = (props: Props) => {
             <ul className="post-errors">
               {localErrors &&
                 localErrors.map((error) => <li key={error}>- {error}</li>)}
-              {errors && <li>- {errors.msg}</li>}
+              {errors && <li>- {typeof errors === "object" && errors.msg}</li>}
             </ul>
           </PostSidebar>
         </div>
