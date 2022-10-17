@@ -13,11 +13,12 @@ import {
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
 });
+
 const port = process.env.PORT || 5000;
 
 const app: Express = express();
 
-app.use(morgan("tiny"));
+app.use(morgan("common"));
 app.disable("x-powered-by");
 app.use(helmet());
 app.use(express.json());
@@ -29,8 +30,7 @@ const RedisStore = connectRedis(session);
 const redisClient = new Redis(process.env.REDIS_URL);
 
 redisClient.on("error", (err) => {
-  console.log(`Session Redis error:  ${err}`);
-  return new Error(err);
+  console.log(`Session error:  ${err}`);
 });
 
 //Configure session middleware
@@ -59,12 +59,12 @@ app.use("/api/posts", require("./routes/api/posts"));
 app.use("/api/auth", require("./routes/api/auth"));
 
 app.use((req, res, next) => {
-  res.status(404).send({ msg: "Couldnt find the resource" });
+  res.status(404).json({ msg: "Couldn't find the resource" });
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).send({ msg: "Something went wrong" });
+  res.status(500).json({ msg: "Something went wrong" });
 });
 
 app.listen(port, () => {
