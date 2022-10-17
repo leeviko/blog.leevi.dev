@@ -5,7 +5,10 @@ import connectRedis from "connect-redis";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import helmet from "helmet";
-import { apiRateLimiter } from "./middleware/rateLimiter";
+import {
+  apiHourRateLimiter,
+  apiMinuteRateLimiter,
+} from "./middleware/rateLimiter";
 
 dotenv.config({
   path: process.env.NODE_ENV === "production" ? ".env" : ".env.local",
@@ -47,7 +50,8 @@ app.use(
   })
 );
 
-app.use(apiRateLimiter);
+app.use(apiHourRateLimiter);
+app.use(apiMinuteRateLimiter);
 app.use("/api/users", require("./routes/api/users"));
 app.use("/api/posts", require("./routes/api/posts"));
 app.use("/api/auth", require("./routes/api/auth"));
