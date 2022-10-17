@@ -6,6 +6,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import {
+  apiDayRateLimiter,
   apiHourRateLimiter,
   apiMinuteRateLimiter,
 } from "./middleware/rateLimiter";
@@ -51,6 +52,7 @@ app.use(
 );
 
 if (process.env.NODE_ENV === "production") {
+  app.use(apiDayRateLimiter);
   app.use(apiHourRateLimiter);
   app.use(apiMinuteRateLimiter);
 }

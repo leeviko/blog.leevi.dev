@@ -11,8 +11,10 @@ redisClient.on("error", (err) => {
 
 // Rate limiter points
 // API
+const maxPointsPerDay = 1000;
 const maxPointsPerHour = 100;
 const maxPointsPerMinute = 15;
+
 // Login
 export const maxWrongAttemptsByIPperDay = 15;
 export const maxConsecutiveFailsByUsernameAndIP = 5;
@@ -20,6 +22,12 @@ export const maxConsecutiveFailsByUsernameAndIP = 5;
 // ******************
 // API rate limiter
 // ******************
+const apiDayRateLimiterRedis = new RateLimiterRedis({
+  storeClient: redisClient,
+  keyPrefix: "api__day_rate_limit",
+  points: maxPointsPerDay,
+  duration: 60 * 60 * 24, // 24 hour
+});
 const apiHourRateLimiterRedis = new RateLimiterRedis({
   storeClient: redisClient,
   keyPrefix: "api__hour_rate_limit",
@@ -33,6 +41,26 @@ const apiMinuteRateLimiterRedis = new RateLimiterRedis({
   duration: 60, // 1 minute
 });
 
+// Day
+export const apiDayRateLimiter = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const key = req.ip;
+
+  apiDayRateLimiterRedis
+    .consume(key, 1)
+    .then(() => {
+      return next();
+    })
+    .catch((err) => {
+      return res
+        .status(429)
+        .json({ msg: "You have done too many requests. Try again in one day" });
+    });
+};
+// Hour
 export const apiHourRateLimiter = (
   req: Request,
   res: Response,
@@ -46,9 +74,12 @@ export const apiHourRateLimiter = (
       return next();
     })
     .catch((err) => {
-      return res.status(429).json({ msg: "Too many requests" });
+      return res
+        .status(429)
+        .json({ msg: "Too many requests. Try again in one hour" });
     });
 };
+// Minute
 export const apiMinuteRateLimiter = (
   req: Request,
   res: Response,
@@ -62,7 +93,9 @@ export const apiMinuteRateLimiter = (
       return next();
     })
     .catch((err) => {
-      return res.status(429).json({ msg: "Too many requests" });
+      return res
+        .status(429)
+        .json({ msg: "Too many requests. Try again in one minute" });
     });
 };
 // ******************
