@@ -685,12 +685,19 @@ h5 {
     width: 85vw;
   }
 
-  .edit-post .post-sidebar-actions {
+  .new .edit-post .post-sidebar-actions {
     flex-direction: row;
     margin-left: 0;
   }
-  .edit-post .post-sidebar-actions button {
+  .new .edit-post .post-sidebar-actions button {
     margin-right: 0.75rem;
+  }
+
+  .old .post-sidebar-actions .btn-section {
+    flex-direction: row;
+  }
+  .old .post-sidebar-actions .btn-section button:first-child {
+    margin-right: 0.5rem;
   }
 }
 

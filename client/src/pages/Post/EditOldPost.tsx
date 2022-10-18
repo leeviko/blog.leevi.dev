@@ -151,7 +151,7 @@ const EditOldPostWithData = ({ post, getPostErrors }: Props) => {
   }, [postDeleted, errors, loading]);
 
   return (
-    <div className="edit-post">
+    <div className="edit-post old">
       {getPostErrors && <Navigate to="/" replace={true} />}
       {post && (
         <div className="edit-post-container">
@@ -227,11 +227,16 @@ const EditOldPostWithData = ({ post, getPostErrors }: Props) => {
                   Publish
                 </button>
               )}
-              <ul className="post-errors">
-                {localErrors &&
-                  localErrors.map((error) => <li key={error}>- {error}</li>)}
-                {getPostErrors && <li>- {getPostErrors.msg}</li>}
-              </ul>
+              {(localErrors.length || getPostErrors || errors) && (
+                <ul className="post-errors">
+                  {localErrors.length > 0 &&
+                    localErrors.map((error) => <li key={error}>- {error}</li>)}
+                  {getPostErrors && <li>- {getPostErrors.msg}</li>}
+                  {typeof errors === "object" && errors && (
+                    <li>- {errors.msg}</li>
+                  )}
+                </ul>
+              )}
             </PostSidebar>
           </div>
         </div>
