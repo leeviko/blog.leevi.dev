@@ -666,9 +666,30 @@ h5 {
 }
 /* END OF PROFILE */
 
+/* MEDIA QUERIES */
 @media screen and (max-width: 820px) {
   .post .post-content {
     width: 400px;
+  }
+  .edit-post-container {
+    width: auto;
+  }
+  .editor,
+  .preview {
+    width: auto;
+  }
+
+  .edit-post-wrapper {
+    flex-direction: column;
+    width: 85vw;
+  }
+
+  .edit-post .post-sidebar-actions {
+    flex-direction: row;
+    margin-left: 0;
+  }
+  .edit-post .post-sidebar-actions button {
+    margin-right: 0.75rem;
   }
 }
 @media screen and (max-width: 525px) {
@@ -691,5 +712,17 @@ h5 {
   }
   .post-sidebar .btn-section .btn:first-child {
     margin-right: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .post .post-content {
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .edit-post-wrapper {
+    width: 95vw;
   }
 }

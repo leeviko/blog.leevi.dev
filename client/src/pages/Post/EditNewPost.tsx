@@ -142,11 +142,16 @@ const EditNewPost = (props: Props) => {
             <button name="draft" className="btn draft-btn" onClick={handleSave}>
               Save draft
             </button>
-            <ul className="post-errors">
-              {localErrors &&
-                localErrors.map((error) => <li key={error}>- {error}</li>)}
-              {errors && <li>- {typeof errors === "object" && errors.msg}</li>}
-            </ul>
+            {(localErrors.length ||
+              (typeof errors === "object" && errors?.msg)) && (
+              <ul className="post-errors">
+                {localErrors.length &&
+                  localErrors.map((error) => <li key={error}>- {error}</li>)}
+                {typeof errors === "object" && errors && (
+                  <li>- {errors.msg}</li>
+                )}
+              </ul>
+            )}
           </PostSidebar>
         </div>
       </div>
