@@ -10,7 +10,12 @@ import PostSidebar from "./PostSidebar";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../store/store";
 import { useDispatch } from "react-redux";
-import { deletePost, updatePost } from "../../store/slices/postSlice";
+import {
+  deletePost,
+  getPostsError,
+  getPostsLoading,
+  updatePost,
+} from "../../store/slices/postSlice";
 import Dialog, { TDialogProps } from "../../components/Dialog";
 
 const Post = () => {
@@ -20,6 +25,9 @@ const Post = () => {
   const { post }: { post: TPostResult | null; errors: any } = useGetPost(slug);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuth);
   const user = useSelector((state: RootState) => state.auth.user);
+  const [postDeleted, setPostDeleted] = useState(false);
+  const loading = useSelector(getPostsLoading);
+  const errors = useSelector(getPostsError);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogContent, setDialogContent] = useState<TDialogProps>({
     title: "",
@@ -68,6 +76,7 @@ const Post = () => {
   const handleDelete = () => {
     if (post && user && (user.id === post.authorid || user.admin)) {
       dispatch(deletePost(post.postid));
+      setPostDeleted(true);
     }
     setOpenDialog(false);
   };
@@ -81,6 +90,13 @@ const Post = () => {
     });
     setOpenDialog(true);
   };
+
+  useEffect(() => {
+    if (postDeleted && !loading && !errors) {
+      navigate("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postDeleted, errors, loading]);
 
   return (
     <article className="post-container">

@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Dialog, { TDialogProps } from "../../components/Dialog";
 import useForm from "../../hooks/useForm";
 import useGetPost from "../../hooks/useGetPost";
-import { deletePost, updatePost } from "../../store/slices/postSlice";
+import {
+  deletePost,
+  getPostsError,
+  getPostsLoading,
+  updatePost,
+} from "../../store/slices/postSlice";
 import { AppDispatch } from "../../store/store";
 import { TPostResult } from "../../types";
 import Editor from "./PostEditor";
@@ -13,7 +19,7 @@ import PostSidebar from "./PostSidebar";
 
 type Props = {
   post: TPostResult | null;
-  errors: any;
+  getPostErrors: any;
 };
 
 const EditOldPost = ({ slug }: { slug: string }) => {
@@ -21,12 +27,14 @@ const EditOldPost = ({ slug }: { slug: string }) => {
 
   return (
     <>
-      {(post || errors) && <EditOldPostWithData post={post} errors={errors} />}
+      {(post || errors) && (
+        <EditOldPostWithData post={post} getPostErrors={errors} />
+      )}
     </>
   );
 };
 
-const EditOldPostWithData = ({ post, errors }: Props) => {
+const EditOldPostWithData = ({ post, getPostErrors }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const [activeTag, setActiveTag] = useState("");
   const [tags, setTags] = useState<Array<string>>(post?.tags || []);
@@ -35,7 +43,11 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
     title: post?.title || "",
     content: post?.content || "",
   });
+  const navigate = useNavigate();
   const [savePressed, setSavePressed] = useState(false);
+  const [postDeleted, setPostDeleted] = useState(false);
+  const errors = useSelector(getPostsError);
+  const loading = useSelector(getPostsLoading);
   const [localErrors, setLocalErrors] = useState<string[]>([]);
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [openDialog, setOpenDialog] = useState(false);
@@ -116,6 +128,7 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
   const handleDelete = () => {
     if (post) {
       dispatch(deletePost(post.postid));
+      setPostDeleted(true);
     }
     setOpenDialog(false);
   };
@@ -130,9 +143,16 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
     setOpenDialog(true);
   };
 
+  useEffect(() => {
+    if (postDeleted && !loading && !errors) {
+      navigate("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postDeleted, errors, loading]);
+
   return (
     <div className="edit-post">
-      {errors && <Navigate to="/" replace={true} />}
+      {getPostErrors && <Navigate to="/" replace={true} />}
       {post && (
         <div className="edit-post-container">
           <div className="edit-post-top">
@@ -210,7 +230,7 @@ const EditOldPostWithData = ({ post, errors }: Props) => {
               <ul className="post-errors">
                 {localErrors &&
                   localErrors.map((error) => <li key={error}>- {error}</li>)}
-                {errors && <li>- {errors.msg}</li>}
+                {getPostErrors && <li>- {getPostErrors.msg}</li>}
               </ul>
             </PostSidebar>
           </div>
