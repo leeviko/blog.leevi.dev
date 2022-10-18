@@ -295,6 +295,7 @@ h5 {
 
 .post-small .post-title {
   font-size: 1.2rem;
+  word-wrap: break-word;
 }
 
 .post-small .post-title,
@@ -692,6 +693,13 @@ h5 {
     margin-right: 0.75rem;
   }
 }
+
+@media screen and (max-width: 575px) {
+  .post-small {
+    width: 95vw;
+  }
+}
+
 @media screen and (max-width: 525px) {
   .post {
     position: relative;
