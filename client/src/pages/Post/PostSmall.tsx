@@ -10,9 +10,9 @@ type Props = {
 export const PostSkeleton = () => {
   return (
     <div style={{ marginTop: "1rem" }}>
-      <Skeleton width={100} />
-      <Skeleton height={25} />
-      <Skeleton />
+      <Skeleton highlightColor="#1f202b" baseColor="#181921" width={100} />
+      <Skeleton highlightColor="#1f202b" baseColor="#181921" height={25} />
+      <Skeleton highlightColor="#1f202b" baseColor="#181921" />
     </div>
   );
 };

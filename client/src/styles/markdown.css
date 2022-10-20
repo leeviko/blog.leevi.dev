@@ -78,10 +78,10 @@
   --color-prettylights-syntax-brackethighlighter-angle: #57606a;
   --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
   --color-prettylights-syntax-constant-other-reference-link: #0a3069;
-  --color-fg-default: rgba(0, 0, 0, 0.8);
+  --color-fg-default: rgba(255, 255, 255, 0.75);
   --color-fg-muted: #605454;
   --color-fg-subtle: #807e7e;
-  --color-canvas-default: #ffffff;
+  --color-canvas-default: var(--bg);
   --color-canvas-subtle: #f6f8fa;
   --color-border-default: #d0d7de;
   --color-border-muted: hsla(210, 18%, 87%, 1);
@@ -159,7 +159,7 @@
 .markdown-body b,
 .markdown-body strong {
   font-weight: 600;
-  color: black;
+  color: #fff;
 }
 
 .markdown-body dfn {

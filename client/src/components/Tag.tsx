@@ -15,7 +15,7 @@ const Tag = ({ name, postType }: Props) => {
               border: `1px solid var(--t-default)`,
               color: "var(--white)",
             }
-          : { backgroundColor: "unset", color: "black" }
+          : { backgroundColor: "unset", color: "var(--text)" }
       }
       className="post-tag"
     >

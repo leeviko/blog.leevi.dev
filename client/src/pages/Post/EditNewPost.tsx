@@ -88,7 +88,7 @@ const EditNewPost = (props: Props) => {
   }, [postSubmitted, loading, errors, posts.ids.length, navigate]);
 
   return (
-    <div className="edit-post">
+    <div className="edit-post new">
       <div className="edit-post-container">
         <div className="edit-post-top">
           <h1 className="section-title">new post - {mode}</h1>
@@ -142,8 +142,7 @@ const EditNewPost = (props: Props) => {
             <button name="draft" className="btn draft-btn" onClick={handleSave}>
               Save draft
             </button>
-            {(localErrors.length ||
-              (typeof errors === "object" && errors?.msg)) && (
+            {(localErrors.length || errors) && (
               <ul className="post-errors">
                 {localErrors.length &&
                   localErrors.map((error) => <li key={error}>- {error}</li>)}
