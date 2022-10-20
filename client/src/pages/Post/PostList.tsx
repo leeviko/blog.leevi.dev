@@ -1,5 +1,4 @@
 import React from "react";
-import Skeleton from "react-loading-skeleton";
 import { useSelector } from "react-redux";
 import LoaderWrapper from "../../components/LoaderWrapper";
 import {
@@ -8,17 +7,7 @@ import {
   selectAllPosts,
 } from "../../store/slices/postSlice";
 
-import PostSmall from "./PostSmall";
-
-const PostSkeleton = () => {
-  return (
-    <div style={{ marginTop: "1rem" }}>
-      <Skeleton width={100} />
-      <Skeleton height={25} />
-      <Skeleton />
-    </div>
-  );
-};
+import PostSmall, { PostSkeleton } from "./PostSmall";
 
 const PostList = () => {
   const posts = useSelector(selectAllPosts);
