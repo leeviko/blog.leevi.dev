@@ -9,6 +9,8 @@ import {
 
 import PostSmall, { PostSkeleton } from "./PostSmall";
 
+import ErrorIcon from "../../assets/images/error.svg";
+
 const PostList = () => {
   const posts = useSelector(selectAllPosts);
   const errors = useSelector(getPostsError);
@@ -17,8 +19,12 @@ const PostList = () => {
   return (
     <div className="post-list">
       {errors && (
-        <p className="errors-section">
-          {(typeof errors === "object" && errors.msg) || "Something went wrong"}
+        <p className="note error">
+          <img alt="error" src={ErrorIcon} />
+          <span>
+            {(typeof errors === "object" && errors.msg) ||
+              "Something went wrong"}
+          </span>
         </p>
       )}
       <LoaderWrapper
