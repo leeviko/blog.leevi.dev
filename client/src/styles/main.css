@@ -23,7 +23,7 @@
   */
   --link-blue: #074378;
 
-  --t-default: #4f7b65;
+  --t-default: #076678;
 
   --sidebar: var(--t-default);
 
@@ -263,6 +263,10 @@ h5 {
   color: hsla(0, 0%, 0%, 0.9);
 }
 
+.dialog-desc {
+  margin: 0.5rem 0;
+}
+
 .dialog-actions {
   margin: 0.2rem 0 0 0;
 }
@@ -273,7 +277,7 @@ h5 {
   font-family: inherit;
   border: none;
   border-radius: 0.2rem;
-  padding: 0 0.5rem;
+  padding: 0.2rem 0.5rem;
   color: var(--text);
 }
 
