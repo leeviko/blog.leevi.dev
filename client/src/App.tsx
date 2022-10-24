@@ -14,6 +14,7 @@ import ProfileMain from "./pages/Profile/ProfileMain";
 
 import "./styles/main.css";
 import ErrorBoundary from "./components/ErrorBoundary";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Route path="edit" element={<EditPost />} />
             </Route>
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>
     </Router>
