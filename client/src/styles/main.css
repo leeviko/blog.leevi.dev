@@ -21,7 +21,7 @@
   --bg-main: #f9f5d7;
 
   */
-  --link-blue: #074378;
+  --link-blue: #284e9a;
 
   --t-default: #076678;
 
@@ -119,6 +119,10 @@ a:hover {
   text-decoration: underline;
 }
 
+.link {
+  color: var(--link-blue);
+}
+
 h1,
 h2,
 h3,
@@ -167,6 +171,12 @@ h5 {
 .submit-btn:disabled {
   cursor: default;
   opacity: 0.7;
+}
+
+.page.error .error-msg {
+  font-family: monospace, monospace;
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
 }
 
 /* ERRORS SECTION */
