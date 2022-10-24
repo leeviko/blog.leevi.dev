@@ -44,8 +44,8 @@ Success: \#4B874A */
   --accent: #4f4a87;
   --accent-muted: #33394b;
   --accent-dark: #353160;
-  --accent-focus: #2f2c57;
-  --accent-hover: #312d58;
+  --accent-focus: #423e71;
+  --accent-hover: #474279;
   --green: #4b874a;
   --green-dark: #3b6c3a;
   --green-focus: #315b31;
@@ -161,7 +161,7 @@ h5 {
 }
 
 .submit-btn:not(:disabled):hover {
-  background-color: var(--accent-dark);
+  background-color: var(--accent-hover);
 }
 
 .submit-btn:not(:disabled):focus {
