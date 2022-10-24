@@ -6,11 +6,10 @@ import pool from "../../config/db";
 import cors from "cors";
 import { ORIGIN } from "../../utils/constants";
 
-const corsOpts = cors({ origin: ORIGIN });
-
+let corsOpts = cors({ origin: ORIGIN, credentials: true });
 const router: Router = express.Router();
 
-router.use("/:id", corsOpts);
+router.use("/", corsOpts);
 
 interface pgError extends Error {
   code?: string;

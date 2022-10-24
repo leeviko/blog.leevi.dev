@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { isAuth } from "../store/slices/authSlice";
+import { isAuth, logout } from "../store/slices/authSlice";
 import { AppDispatch, RootState } from "../store/store";
 
 const Navbar = () => {
@@ -20,6 +20,10 @@ const Navbar = () => {
       }
     }
   }, [dispatch, isAuthenticated, location]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <nav className="navbar">
@@ -50,6 +54,11 @@ const Navbar = () => {
               <Link to="/new-post">
                 <button className="btn submit-btn">New</button>
               </Link>
+            </div>
+            <div className="nav-item" style={{ margin: "0" }}>
+              <button className="btn submit-btn" onClick={handleLogout}>
+                Logout
+              </button>
             </div>
           </>
         )}

@@ -102,6 +102,20 @@ export const isAuth = createAsyncThunk(
   }
 );
 
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await api.delete("/users/logout", { withCredentials: true });
+
+      return res.data;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue("Failed to logout");
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -149,6 +163,11 @@ const authSlice = createSlice({
         } else {
           state.error = action.error.message;
         }
+      })
+      .addCase(logout.fulfilled, (state, action) => {
+        state.isAuth = false;
+        state.user = null;
+        Cookies.remove("user_sid");
       });
   },
 });
