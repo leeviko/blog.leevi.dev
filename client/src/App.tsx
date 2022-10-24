@@ -13,28 +13,34 @@ import ProfileSettings from "./pages/Profile/ProfileSettings";
 import ProfileMain from "./pages/Profile/ProfileMain";
 
 import "./styles/main.css";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home limit={10} cursor="" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/archive" element={<Archive limit={10} cursor={null} />} />
-        <Route path="/profile" element={<Profile />}>
-          <Route path="" element={<ProfileMain />} />
-          <Route path="posts" element={<ProfilePosts />} />
-          <Route path="settings" element={<ProfileSettings />} />
-        </Route>
-        <Route path="/new-post" element={<EditPost />} />
-        <Route path="/posts">
-          <Route path=":slug">
-            <Route path="" element={<Post />} />
-            <Route path="edit" element={<EditPost />} />
+      <ErrorBoundary>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home limit={10} cursor="" />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/archive"
+            element={<Archive limit={10} cursor={null} />}
+          />
+          <Route path="/profile" element={<Profile />}>
+            <Route path="" element={<ProfileMain />} />
+            <Route path="posts" element={<ProfilePosts />} />
+            <Route path="settings" element={<ProfileSettings />} />
           </Route>
-        </Route>
-      </Routes>
+          <Route path="/new-post" element={<EditPost />} />
+          <Route path="/posts">
+            <Route path=":slug">
+              <Route path="" element={<Post />} />
+              <Route path="edit" element={<EditPost />} />
+            </Route>
+          </Route>
+        </Routes>
+      </ErrorBoundary>
     </Router>
   );
 }
