@@ -16,5 +16,3 @@ Backend at `localhost:5000`
 **Todo:**
 
 - [ ] Profile page(s)
-- [ ] Migrate to Next.js lol
-- ...
