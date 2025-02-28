@@ -74,13 +74,29 @@ router.post(
     pool.query(sql, [username], async (err, result) => {
       if (err) {
         const promises = [limiterSlowBruteByIP.consume(req.ip)];
-        await Promise.all(promises);
-        return res.status(400).json({ msg: "Something went wrong" });
+        await Promise.all(promises).catch((err) => {
+          if (err.remainingPoints !== 0)
+            return res
+              .status(400)
+              .json({ msg: 'Failed to login. Try again later.' });
+          return res.status(429).json({
+            msg: 'You have done too many failed attempts. Try again later',
+          });
+        });
+        return res.status(400).json({ msg: 'Something went wrong' });
       }
       if (result.rowCount == 0) {
         const promises = [limiterSlowBruteByIP.consume(req.ip)];
-        await Promise.all(promises);
-        return res.status(400).json({ msg: "Wrong username or password" });
+        await Promise.all(promises).catch((err) => {
+          if (err.remainingPoints !== 0)
+            return res
+              .status(400)
+              .json({ msg: 'Failed to login. Try again later.' });
+          return res.status(429).json({
+            msg: 'You have done too many failed attempts. Try again later',
+          });
+        });
+        return res.status(400).json({ msg: 'Wrong username or password' });
       }
 
       const user = result.rows[0];

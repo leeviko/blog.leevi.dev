@@ -90,6 +90,7 @@
   --color-accent-emphasis: #074378;
   --color-attention-subtle: #fff8c5;
   --color-danger-fg: #cf222e;
+  --color-link: #0070E0;
 }
 
 .markdown-body {
@@ -142,7 +143,7 @@
 
 .markdown-body a {
   background-color: transparent;
-  color: var(--color-accent-fg);
+  color: var(--color-link);
   text-decoration: none;
 }
 
@@ -203,6 +204,10 @@
   max-width: 100%;
   box-sizing: content-box;
   background-color: var(--color-canvas-default);
+}
+
+.markdown-body code {
+  background: red;
 }
 
 .markdown-body code,
@@ -385,7 +390,7 @@
 .markdown-body blockquote {
   margin: 0;
   padding: 0 1em;
-  color: var(--color-fg-muted);
+  color: var(--color-fg-default);
   border-left: 0.25em solid var(--color-border-default);
 }
 
@@ -919,11 +924,9 @@
 
 .markdown-body .highlight pre,
 .markdown-body pre {
-  padding: 16px 0;
   overflow: auto;
   font-size: 85%;
   line-height: 1.45;
-  background-color: var(--color-canvas-subtle);
   border-radius: 6px;
 }
 
